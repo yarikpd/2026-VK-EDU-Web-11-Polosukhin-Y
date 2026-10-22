@@ -77,7 +77,6 @@
 .form-check-input:checked { background-color: #a7687d; border-color: #a7687d; }
 .form-check-input:focus { border-color: #dda0b2; box-shadow: 0 0 0 .25rem rgba(221, 160, 178, .25); }
 .search-form { min-width: 0; }
+.search-form .form-control { min-width: 0; }
+.member-number { width: 3ch; font-variant-numeric: tabular-nums; }
 .form-card { max-width: 44rem; }
-@media (max-width: 767.98px) {
-  .search-form { order: 1; flex-basis: 100%; }
-}

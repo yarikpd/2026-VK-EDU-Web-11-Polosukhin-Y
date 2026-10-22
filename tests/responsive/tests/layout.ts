@@ -35,6 +35,13 @@ export function inspectLayout() {
       `Элемент выходит за экран: ${name(element)}`);
   }
 
+  const headerItems = Array.from(document.querySelector('header > .container')!.children).filter(visible);
+  const centers = headerItems.map(element => {
+    const rect = element.getBoundingClientRect();
+    return rect.top + rect.height / 2;
+  });
+  check(Math.max(...centers) - Math.min(...centers) <= tolerance, 'Шапка переносится на несколько строк');
+
   // Проверяем реальные прямоугольники, а не наличие Bootstrap-классов.
   for (const selector of ['header > .container', '.search-form']) {
     const container = document.querySelector(selector);

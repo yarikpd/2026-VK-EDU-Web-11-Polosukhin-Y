@@ -12,22 +12,42 @@
   <body class="d-flex flex-column min-vh-100">
     <a href="#content" class="visually-hidden-focusable position-absolute bg-body-secondary p-2">Перейти к содержимому</a>
     <header class="bg-body-secondary py-3 border-bottom">
-      <div class="container d-flex flex-wrap align-items-center gap-3">
+      <div class="container d-flex flex-nowrap align-items-center gap-2 gap-lg-3">
         <a href="index.html" class="navbar-brand text-white fw-bold fs-4">AskVK</a>
         <form class="search-form d-flex gap-2 flex-grow-1" action="index.html" method="get" role="search">
           <label for="search" class="visually-hidden">Поиск вопросов</label>
           <input id="search" name="q" type="search" class="form-control" placeholder="Поиск вопросов" maxlength="150">
           <button class="btn btn-outline-secondary" type="submit">Найти</button>
         </form>
-        <a href="ask.html" class="btn btn-primary">Задать вопрос</a>
-        <div class="d-flex align-items-center gap-2">
-          <img src="static/img/user.svg" width="36" height="36" class="rounded flex-shrink-0" alt="Аватар пользователя" loading="lazy">
-          <div class="small">
-            <a href="profile.html" class="text-white">Ярослав</a>
-            <div>
-              <a href="index.html" class="link-body-emphasis">Выйти</a>
+        <div class="d-none d-lg-flex align-items-center gap-3 flex-shrink-0">
+          <a href="ask.html" class="btn btn-primary">Задать вопрос</a>
+          <div class="d-flex align-items-center gap-2">
+            <img src="static/img/user.svg" width="36" height="36" class="rounded flex-shrink-0" alt="Аватар пользователя" loading="lazy">
+            <div class="small">
+              <a href="profile.html" class="text-white">Ярослав</a>
+              <div>
+                <a href="index.html" class="link-body-emphasis">Выйти</a>
+              </div>
             </div>
           </div>
+        </div>
+        <div class="dropdown d-lg-none flex-shrink-0">
+          <button class="btn btn-outline-primary d-flex align-items-center p-2" type="button" id="user-menu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Меню пользователя">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 6h18M3 12h18M3 18h18"></path>
+            </svg>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-menu">
+            <li>
+              <a class="dropdown-item" href="ask.html">Задать вопрос</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="profile.html">Профиль — Ярослав</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="index.html">Выйти</a>
+            </li>
+          </ul>
         </div>
       </div>
     </header>
@@ -99,26 +119,56 @@
             <div class="card-body">
               <h2 class="h5">Лучшие пользователи</h2>
               <p class="small text-body-secondary">За эту неделю</p>
-              <ol class="ps-3 mb-0">
-                <li class="mb-2">Алексей Крылов <span class="text-body-secondary small">· 128</span>
+              <ol class="list-unstyled mb-0" role="list">
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">1.</span>
+                  <span>Алексей Крылов <span class="text-body-secondary small">· 128</span>
+                  </span>
                 </li>
-                <li class="mb-2">Мария Смирнова <span class="text-body-secondary small">· 112</span>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">2.</span>
+                  <span>Мария Смирнова <span class="text-body-secondary small">· 112</span>
+                  </span>
                 </li>
-                <li class="mb-2">Иван Петров <span class="text-body-secondary small">· 96</span>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">3.</span>
+                  <span>Иван Петров <span class="text-body-secondary small">· 96</span>
+                  </span>
                 </li>
-                <li class="mb-2">Анна Соколова <span class="text-body-secondary small">· 84</span>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">4.</span>
+                  <span>Анна Соколова <span class="text-body-secondary small">· 84</span>
+                  </span>
                 </li>
-                <li class="mb-2">Дмитрий Орлов <span class="text-body-secondary small">· 73</span>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">5.</span>
+                  <span>Дмитрий Орлов <span class="text-body-secondary small">· 73</span>
+                  </span>
                 </li>
-                <li class="mb-2">Елена Волкова <span class="text-body-secondary small">· 65</span>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">6.</span>
+                  <span>Елена Волкова <span class="text-body-secondary small">· 65</span>
+                  </span>
                 </li>
-                <li class="mb-2">Никита Морозов <span class="text-body-secondary small">· 58</span>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">7.</span>
+                  <span>Никита Морозов <span class="text-body-secondary small">· 58</span>
+                  </span>
                 </li>
-                <li class="mb-2">Ольга Белова <span class="text-body-secondary small">· 47</span>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">8.</span>
+                  <span>Ольга Белова <span class="text-body-secondary small">· 47</span>
+                  </span>
                 </li>
-                <li class="mb-2">Павел Козлов <span class="text-body-secondary small">· 39</span>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">9.</span>
+                  <span>Павел Козлов <span class="text-body-secondary small">· 39</span>
+                  </span>
                 </li>
-                <li class="mb-2">София Лебедева <span class="text-body-secondary small">· 31</span>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">10.</span>
+                  <span>София Лебедева <span class="text-body-secondary small">· 31</span>
+                  </span>
                 </li>
               </ol>
             </div>

@@ -18,7 +18,12 @@ for (const [path, heading] of pages) {
     await app.open(`/${path}`);
     await expect(screen.getByRole('banner')).toBeVisible();
     await expect(screen.getByRole('searchbox', 'Поиск вопросов')).toBeVisible();
-    await expect(screen.getByRole('link', 'Задать вопрос', { exact: true })).toBeVisible();
+    const width = await browser.evaluate(() => window.innerWidth);
+    if (width < 992) {
+      await expect(screen.getByRole('button', 'Меню пользователя', { exact: true })).toBeVisible();
+    } else {
+      await expect(screen.getByRole('link', 'Задать вопрос', { exact: true })).toBeVisible();
+    }
     await expect(screen.getByRole('complementary', 'Сообщество')).toBeVisible();
     await expect(screen.getByRole('contentinfo')).toBeAttached();
     if (heading) await expect(screen.getByRole('heading', heading, { level: 1, exact: true })).toBeVisible();
@@ -53,10 +58,41 @@ test('Длинные значения полей не растягивают ф�
 
 test('Колонки перестраиваются при изменении размера открытой страницы', async ({ app, browser }) => {
   await app.open('/question.html');
-  for (const width of [1200, 768, 375, 1200]) {
+  for (const width of [1200, 992, 991, 768, 546, 375, 1200]) {
     await browser.setViewport({ width, height: 900 });
     await expect.poll(() => browser.evaluate(inspectLayout), {
       message: `После изменения ширины на ${width}px`,
     }).toEqual([]);
   }
+});
+
+
+test('Меню пользователя открывается и закрывается на узком экране', async ({ app, screen, browser }) => {
+  await app.open('/index.html');
+  const width = await browser.evaluate(() => window.innerWidth);
+  const toggle = screen.getByRole('button', 'Меню пользователя', { exact: true });
+  if (width >= 992) {
+    await expect(toggle).toBeHidden();
+    await expect(screen.getByRole('link', 'Задать вопрос', { exact: true })).toBeVisible();
+    return;
+  }
+  await toggle.tap();
+  await expect(toggle).toBeExpanded();
+  const menu = browser.locator('header .dropdown-menu');
+  for (const name of ['Задать вопрос', 'Войти', 'Регистрация']) {
+    await expect(menu.getByRole('link', name, { exact: true })).toBeVisible();
+  }
+  await expect.poll(() => browser.evaluate(inspectLayout)).toEqual([]);
+  await app.screenshot('mobile-user-menu');
+  await toggle.press('Escape');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await toggle.tap();
+  await menu.getByRole('link', 'Задать вопрос', { exact: true }).tap();
+  await expect(browser).toHaveURL('/ask.html');
+});
+
+test('Регистрация открывается с пустыми email и никнеймом', async ({ app, screen }) => {
+  await app.open('/signup.html');
+  await expect(screen.getByLabel('Электронная почта', { exact: true })).toHaveValue('');
+  await expect(screen.getByLabel('Никнейм', { exact: true })).toHaveValue('');
 });
