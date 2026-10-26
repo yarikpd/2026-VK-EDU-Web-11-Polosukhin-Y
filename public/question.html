@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Вопросы и ответы о веб-разработке. Учебный проект AskVK.">
+    <title>Как подключить статические файлы в Django? — AskVK</title>
+    <link rel="icon" href="static/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <a href="#content" class="visually-hidden-focusable position-absolute bg-body-secondary p-2">Перейти к содержимому</a>
+    <header class="bg-body-secondary py-3 border-bottom">
+      <div class="container d-flex flex-nowrap align-items-center gap-2 gap-lg-3">
+        <a href="index.html" class="navbar-brand text-white fw-bold fs-4">AskVK</a>
+        <form class="search-form d-flex gap-2 flex-grow-1" action="index.html" method="get" role="search">
+          <label for="search" class="visually-hidden">Поиск вопросов</label>
+          <input id="search" name="q" type="search" class="form-control" placeholder="Поиск вопросов" maxlength="150">
+          <button class="btn btn-outline-secondary" type="submit">Найти</button>
+        </form>
+        <div class="d-none d-lg-flex align-items-center gap-3 flex-shrink-0">
+          <a href="ask.html" class="btn btn-primary">Задать вопрос</a>
+          <div class="d-flex gap-3 align-items-center">
+            <a href="login.html" class="link-body-emphasis">Войти</a>
+            <a href="signup.html" class="btn btn-sm btn-outline-primary">Регистрация</a>
+          </div>
+        </div>
+        <div class="dropdown d-lg-none flex-shrink-0">
+          <button class="btn btn-outline-primary d-flex align-items-center p-2" type="button" id="user-menu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Меню пользователя">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 6h18M3 12h18M3 18h18"></path>
+            </svg>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-menu">
+            <li>
+              <a class="dropdown-item" href="ask.html">Задать вопрос</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="login.html">Войти</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="signup.html">Регистрация</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    <main class="container flex-grow-1 py-4" id="content">
+      <div class="row g-4">
+        <div class="col-12 col-md-8 col-xl-9">
+          <h1 class="h3 mb-4">Вопрос</h1>
+          <article class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64" class="rounded flex-shrink-0" role="img" aria-label="Аватар: Алексей Крылов">
+                  <rect width="64" height="64" rx="10" fill="#a7687d"></rect>
+                  <text x="32" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="white">АК</text>
+                </svg>
+                <div>
+                  <span class="fw-medium">Алексей Крылов</span>
+                  <div class="small text-body-secondary">
+                    <time datetime="2026-10-22T10:30:00+03:00">22 октября 2026, 10:30</time>
+                  </div>
+                </div>
+              </div>
+              <h2 class="h4">Как подключить статические файлы в Django?</h2>
+              <p>Создал приложение и добавил CSS, но стили не появляются на странице. Где нужно хранить статику и как правильно подключить её в шаблоне?</p>
+              <p>В шаблоне использую относительный путь к файлу. Подскажите, какие настройки нужно проверить и для чего нужен тег <code>static</code>?</p>
+              <div class="d-flex flex-wrap align-items-center gap-3">
+                <fieldset class="m-0">
+                  <legend class="visually-hidden">Оценка публикации</legend>
+                  <div class="btn-group btn-group-sm" role="group" aria-label="Голосование">
+                    <input class="btn-check" type="radio" name="vote-detail" id="up-detail" checked>
+                    <label class="btn btn-outline-primary" for="up-detail">
+                      <span aria-hidden="true">+</span>
+                      <span class="visually-hidden">Нравится</span>
+                    </label>
+                    <input class="btn-check" type="radio" name="vote-detail" id="none-detail">
+                    <label class="btn btn-outline-secondary" for="none-detail">12<span class="visually-hidden"> — рейтинг, сбросить голос</span>
+                    </label>
+                    <input class="btn-check" type="radio" name="vote-detail" id="down-detail">
+                    <label class="btn btn-outline-primary" for="down-detail">
+                      <span aria-hidden="true">−</span>
+                      <span class="visually-hidden">Не нравится</span>
+                    </label>
+                  </div>
+                </fieldset>
+                <a href="question.html#answers">3 ответа</a>
+                <div class="d-flex flex-wrap gap-1">
+                  <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=python">python</a>
+                  <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=django">django</a>
+                </div>
+              </div>
+            </div>
+          </article>
+          <h2 class="h4 mt-4 mb-3" id="answers">3 ответа</h2>
+          <article class="card mb-3 border-success">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64" class="rounded flex-shrink-0" role="img" aria-label="Аватар: Мария Смирнова">
+                  <rect width="64" height="64" rx="10" fill="#627b6e"></rect>
+                  <text x="32" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="white">МС</text>
+                </svg>
+                <div>
+                  <h3 class="h6 mb-1">Мария Смирнова</h3>
+                  <time class="small text-body-secondary" datetime="2026-10-22T11:00:00+03:00">22 октября 2026, 11:00</time>
+                </div>
+              </div>
+              <p>Добавьте приложение в INSTALLED_APPS и проверьте STATIC_URL. В начале шаблона подключите {% load static %}, а путь к CSS укажите через {% static 'css/style.css' %}.</p>
+              <div class="d-flex flex-wrap gap-3 align-items-center">
+                <fieldset class="m-0">
+                  <legend class="visually-hidden">Оценка публикации</legend>
+                  <div class="btn-group btn-group-sm" role="group" aria-label="Голосование">
+                    <input class="btn-check" type="radio" name="vote-a0" id="up-a0" checked>
+                    <label class="btn btn-outline-primary" for="up-a0">
+                      <span aria-hidden="true">+</span>
+                      <span class="visually-hidden">Нравится</span>
+                    </label>
+                    <input class="btn-check" type="radio" name="vote-a0" id="none-a0">
+                    <label class="btn btn-outline-secondary" for="none-a0">16<span class="visually-hidden"> — рейтинг, сбросить голос</span>
+                    </label>
+                    <input class="btn-check" type="radio" name="vote-a0" id="down-a0">
+                    <label class="btn btn-outline-primary" for="down-a0">
+                      <span aria-hidden="true">−</span>
+                      <span class="visually-hidden">Не нравится</span>
+                    </label>
+                  </div>
+                </fieldset>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="accepted-0" checked>
+                  <label class="form-check-label" for="accepted-0">Правильный ответ</label>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64" class="rounded flex-shrink-0" role="img" aria-label="Аватар: Иван Петров">
+                  <rect width="64" height="64" rx="10" fill="#876b88"></rect>
+                  <text x="32" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="white">ИП</text>
+                </svg>
+                <div>
+                  <h3 class="h6 mb-1">Иван Петров</h3>
+                  <time class="small text-body-secondary" datetime="2026-10-22T11:00:00+03:00">22 октября 2026, 11:00</time>
+                </div>
+              </div>
+              <p>Для общей статики проекта также можно указать STATICFILES_DIRS. Во время разработки файлы отдает runserver при DEBUG=True.</p>
+              <div class="d-flex flex-wrap gap-3 align-items-center">
+                <fieldset class="m-0">
+                  <legend class="visually-hidden">Оценка публикации</legend>
+                  <div class="btn-group btn-group-sm" role="group" aria-label="Голосование">
+                    <input class="btn-check" type="radio" name="vote-a1" id="up-a1">
+                    <label class="btn btn-outline-primary" for="up-a1">
+                      <span aria-hidden="true">+</span>
+                      <span class="visually-hidden">Нравится</span>
+                    </label>
+                    <input class="btn-check" type="radio" name="vote-a1" id="none-a1" checked>
+                    <label class="btn btn-outline-secondary" for="none-a1">5<span class="visually-hidden"> — рейтинг, сбросить голос</span>
+                    </label>
+                    <input class="btn-check" type="radio" name="vote-a1" id="down-a1">
+                    <label class="btn btn-outline-primary" for="down-a1">
+                      <span aria-hidden="true">−</span>
+                      <span class="visually-hidden">Не нравится</span>
+                    </label>
+                  </div>
+                </fieldset>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="accepted-1">
+                  <label class="form-check-label" for="accepted-1">Правильный ответ</label>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64" class="rounded flex-shrink-0" role="img" aria-label="Аватар: Алексей Крылов">
+                  <rect width="64" height="64" rx="10" fill="#a7687d"></rect>
+                  <text x="32" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="white">АК</text>
+                </svg>
+                <div>
+                  <h3 class="h6 mb-1">Алексей Крылов</h3>
+                  <time class="small text-body-secondary" datetime="2026-10-22T11:00:00+03:00">22 октября 2026, 11:00</time>
+                </div>
+              </div>
+              <p>Проверьте вкладку Network в инструментах разработчика. Код 404 у CSS поможет понять, какой путь запрашивает браузер.</p>
+              <div class="d-flex flex-wrap gap-3 align-items-center">
+                <fieldset class="m-0">
+                  <legend class="visually-hidden">Оценка публикации</legend>
+                  <div class="btn-group btn-group-sm" role="group" aria-label="Голосование">
+                    <input class="btn-check" type="radio" name="vote-a2" id="up-a2">
+                    <label class="btn btn-outline-primary" for="up-a2">
+                      <span aria-hidden="true">+</span>
+                      <span class="visually-hidden">Нравится</span>
+                    </label>
+                    <input class="btn-check" type="radio" name="vote-a2" id="none-a2" checked>
+                    <label class="btn btn-outline-secondary" for="none-a2">2<span class="visually-hidden"> — рейтинг, сбросить голос</span>
+                    </label>
+                    <input class="btn-check" type="radio" name="vote-a2" id="down-a2">
+                    <label class="btn btn-outline-primary" for="down-a2">
+                      <span aria-hidden="true">−</span>
+                      <span class="visually-hidden">Не нравится</span>
+                    </label>
+                  </div>
+                </fieldset>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="accepted-2">
+                  <label class="form-check-label" for="accepted-2">Правильный ответ</label>
+                </div>
+              </div>
+            </div>
+          </article>
+          <nav aria-label="Страницы ответов" class="mt-4">
+            <ul class="pagination pagination-sm flex-wrap">
+              <li class="page-item disabled">
+                <span class="page-link">Назад</span>
+              </li>
+              <li class="page-item active" aria-current="page">
+                <span class="page-link">1</span>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="question.html?page=2">2</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="question.html?page=3">3</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="question.html?page=2">Далее</a>
+              </li>
+            </ul>
+          </nav>
+          <section class="card mt-4">
+            <div class="card-body">
+              <h2 class="h4">Ваш ответ</h2>
+              <p class="small">Для отправки ответа <a href="login.html">войдите</a> или <a href="signup.html">зарегистрируйтесь</a>.</p>
+              <form>
+                <div class="mb-3">
+                  <label class="form-label" for="answer">Текст ответа</label>
+                  <textarea class="form-control" id="answer" rows="5" maxlength="10000" required aria-describedby="answer-help"></textarea>
+                  <div class="form-text" id="answer-help">До 10 000 символов. Объясните, почему ваше решение помогает.</div>
+                </div>
+                <button class="btn btn-primary" type="button" disabled>Ответить</button>
+                <p class="small text-body-secondary mt-3 mb-0">Это макет формы. Отправка данных появится в следующих домашних заданиях.</p>
+              </form>
+            </div>
+          </section>
+        </div>
+        <aside class="col-12 col-md-4 col-xl-3" aria-label="Сообщество">
+          <section class="card mb-3">
+            <div class="card-body">
+              <h2 class="h5">Популярные теги</h2>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=python">python</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=django">django</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=bootstrap">bootstrap</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=html">html</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=css">css</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=javascript">javascript</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=git">git</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=linux">linux</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=sql">sql</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=postgresql">postgresql</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=http">http</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=api">api</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=docker">docker</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=nginx">nginx</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=testing">testing</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=web">web</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=forms">forms</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=flexbox">flexbox</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=grid">grid</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=backend">backend</a>
+              </div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-body">
+              <h2 class="h5">Лучшие пользователи</h2>
+              <p class="small text-body-secondary">За эту неделю</p>
+              <ol class="list-unstyled mb-0" role="list">
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">1.</span>
+                  <span>Алексей Крылов <span class="text-body-secondary small">· 128</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">2.</span>
+                  <span>Мария Смирнова <span class="text-body-secondary small">· 112</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">3.</span>
+                  <span>Иван Петров <span class="text-body-secondary small">· 96</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">4.</span>
+                  <span>Анна Соколова <span class="text-body-secondary small">· 84</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">5.</span>
+                  <span>Дмитрий Орлов <span class="text-body-secondary small">· 73</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">6.</span>
+                  <span>Елена Волкова <span class="text-body-secondary small">· 65</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">7.</span>
+                  <span>Никита Морозов <span class="text-body-secondary small">· 58</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">8.</span>
+                  <span>Ольга Белова <span class="text-body-secondary small">· 47</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">9.</span>
+                  <span>Павел Козлов <span class="text-body-secondary small">· 39</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">10.</span>
+                  <span>София Лебедева <span class="text-body-secondary small">· 31</span>
+                  </span>
+                </li>
+              </ol>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <footer class="border-top bg-body-secondary py-3 mt-4">
+      <div class="container d-flex flex-wrap justify-content-between gap-2 small text-body-secondary">
+        <span>© 2026 AskVK · Вопросы и ответы</span>
+        <span>Учебный проект · Статическая верстка</span>
+      </div>
+    </footer>
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

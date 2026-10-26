@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Вопросы и ответы о веб-разработке. Учебный проект AskVK.">
+    <title>Новый вопрос — AskVK</title>
+    <link rel="icon" href="static/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <a href="#content" class="visually-hidden-focusable position-absolute bg-body-secondary p-2">Перейти к содержимому</a>
+    <header class="bg-body-secondary py-3 border-bottom">
+      <div class="container d-flex flex-nowrap align-items-center gap-2 gap-lg-3">
+        <a href="index.html" class="navbar-brand text-white fw-bold fs-4">AskVK</a>
+        <form class="search-form d-flex gap-2 flex-grow-1" action="index.html" method="get" role="search">
+          <label for="search" class="visually-hidden">Поиск вопросов</label>
+          <input id="search" name="q" type="search" class="form-control" placeholder="Поиск вопросов" maxlength="150">
+          <button class="btn btn-outline-secondary" type="submit">Найти</button>
+        </form>
+        <div class="d-none d-lg-flex align-items-center gap-3 flex-shrink-0">
+          <a href="ask.html" class="btn btn-primary">Задать вопрос</a>
+          <div class="d-flex gap-3 align-items-center">
+            <a href="login.html" class="link-body-emphasis">Войти</a>
+            <a href="signup.html" class="btn btn-sm btn-outline-primary">Регистрация</a>
+          </div>
+        </div>
+        <div class="dropdown d-lg-none flex-shrink-0">
+          <button class="btn btn-outline-primary d-flex align-items-center p-2" type="button" id="user-menu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Меню пользователя">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 6h18M3 12h18M3 18h18"></path>
+            </svg>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-menu">
+            <li>
+              <a class="dropdown-item" href="ask.html">Задать вопрос</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="login.html">Войти</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="signup.html">Регистрация</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    <main class="container flex-grow-1 py-4" id="content">
+      <div class="row g-4">
+        <div class="col-12 col-md-8 col-xl-9">
+          <h1 class="h3 mb-4">Новый вопрос</h1>
+          <div class="card form-card">
+            <div class="card-body p-3 p-lg-4">
+              <form>
+                <div class="alert alert-danger" role="alert">Вопрос не опубликован. Исправьте отмеченное поле.</div>
+                <div class="mb-3">
+                  <label class="form-label" for="title">Заголовок</label>
+                  <input class="form-control" id="title" type="text" maxlength="150" required aria-describedby="title-help">
+                  <div class="form-text" id="title-help">Кратко сформулируйте вопрос. Не более 150 символов.</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="body">Текст вопроса</label>
+                  <textarea class="form-control is-invalid" id="body" rows="6" maxlength="10000" required aria-describedby="body-help body-error" aria-invalid="true"></textarea>
+                  <div class="form-text" id="body-help">Опишите задачу, ожидаемый результат и то, что уже пробовали. До 10 000 символов.</div>
+                  <div class="invalid-feedback" id="body-error">Добавьте описание вопроса.</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="tags">Теги</label>
+                  <input class="form-control" id="tags" type="text" value="python, django" maxlength="94" required aria-describedby="tags-help">
+                  <div class="form-text" id="tags-help">Не более 3 тегов через запятую. До 30 символов в каждом.</div>
+                </div>
+                <button class="btn btn-primary" type="button">Опубликовать</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <aside class="col-12 col-md-4 col-xl-3" aria-label="Сообщество">
+          <section class="card mb-3">
+            <div class="card-body">
+              <h2 class="h5">Популярные теги</h2>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=python">python</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=django">django</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=bootstrap">bootstrap</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=html">html</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=css">css</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=javascript">javascript</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=git">git</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=linux">linux</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=sql">sql</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=postgresql">postgresql</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=http">http</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=api">api</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=docker">docker</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=nginx">nginx</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=testing">testing</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=web">web</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=forms">forms</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=flexbox">flexbox</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=grid">grid</a>
+                <a class="badge text-bg-secondary border text-decoration-none" href="index.html?tag=backend">backend</a>
+              </div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-body">
+              <h2 class="h5">Лучшие пользователи</h2>
+              <p class="small text-body-secondary">За эту неделю</p>
+              <ol class="list-unstyled mb-0" role="list">
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">1.</span>
+                  <span>Алексей Крылов <span class="text-body-secondary small">· 128</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">2.</span>
+                  <span>Мария Смирнова <span class="text-body-secondary small">· 112</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">3.</span>
+                  <span>Иван Петров <span class="text-body-secondary small">· 96</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">4.</span>
+                  <span>Анна Соколова <span class="text-body-secondary small">· 84</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">5.</span>
+                  <span>Дмитрий Орлов <span class="text-body-secondary small">· 73</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">6.</span>
+                  <span>Елена Волкова <span class="text-body-secondary small">· 65</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">7.</span>
+                  <span>Никита Морозов <span class="text-body-secondary small">· 58</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">8.</span>
+                  <span>Ольга Белова <span class="text-body-secondary small">· 47</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">9.</span>
+                  <span>Павел Козлов <span class="text-body-secondary small">· 39</span>
+                  </span>
+                </li>
+                <li class="d-flex gap-2 mb-2">
+                  <span class="member-number flex-shrink-0" aria-hidden="true">10.</span>
+                  <span>София Лебедева <span class="text-body-secondary small">· 31</span>
+                  </span>
+                </li>
+              </ol>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <footer class="border-top bg-body-secondary py-3 mt-4">
+      <div class="container d-flex flex-wrap justify-content-between gap-2 small text-body-secondary">
+        <span>© 2026 AskVK · Вопросы и ответы</span>
+        <span>Учебный проект · Статическая верстка</span>
+      </div>
+    </footer>
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
