@@ -6,7 +6,6 @@ python manage.py migrate
 
 python manage.py collectstatic --no-input
 
-# check for the existence of the log files
 if [ ! -f /logs/access_file_g.log ]; then
     touch /logs/access_file_g.log
 fi

@@ -21,8 +21,8 @@ services:
     container_name: askvk_django
     volumes:
       - django_logs:/logs
-      - ./static:/app/static
       - ./media:/app/media
+      - static_data:/app/static_temp
     build:
       context: .
     expose:
@@ -41,7 +41,7 @@ services:
     container_name: nginx
     build: ./nginx
     volumes:
-      - ./static:/static
+      - static_data:/static:ro
       - nginx_logs:/var/log/nginx
     ports:
       - "80:80"
@@ -53,3 +53,4 @@ volumes:
   postgres_data:
   django_logs:
   nginx_logs:
+  static_data:

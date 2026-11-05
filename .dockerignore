@@ -106,6 +106,5 @@ dmypy.json
 .pyre/
 .pytype/
 cython_debug/
-static/
 static_temp/
 .env.docker

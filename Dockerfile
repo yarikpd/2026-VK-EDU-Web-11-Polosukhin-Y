@@ -7,7 +7,6 @@ RUN pip install -r requirements.txt
 WORKDIR /app
 COPY . .
 
-COPY scripts/entry.sh /
-RUN chmod +x /entry.sh
+RUN chmod +x ./scripts/entry.sh
 
-ENTRYPOINT ["sh", "/entry.sh"]
+ENTRYPOINT ["sh", "./scripts/entry.sh"]
