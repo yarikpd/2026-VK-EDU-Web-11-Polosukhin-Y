@@ -128,11 +128,16 @@ test('Пагинатор скрыт при единственной страни
   await expect(screen.getByRole('navigation', 'Страницы ответов', { exact: true })).toHaveCount(0);
 });
 
-test('Неизвестный вопрос и неверная страница возвращают HTTP 404', async ({ app }) => {
-  for (const path of ['/question/999/', '/question/1/?page=0', '/?page=abc']) {
-    const response = await fetch(new URL(path, app.baseUrl));
-    expect(response.status, path).toBe(404);
+test('Некорректный page открывает допустимую страницу; неизвестный вопрос возвращает 404', async ({ app }) => {
+  for (const route of ['/', '/question/1/']) {
+    for (const value of ['abc', '0', '-1', '999', '']) {
+      const response = await fetch(new URL(`${route}?page=${value}`, app.baseUrl));
+      expect(response.status, `${route}?page=${value}`).toBe(200);
+      expect(await response.text()).toContain('Как подключить статические файлы в Django?');
+    }
   }
+  const response = await fetch(new URL('/question/999/', app.baseUrl));
+  expect(response.status).toBe(404);
 });
 
 test('Гость видит приглашение войти вместо формы ответа', async ({ app, screen }) => {

@@ -1,5 +1,5 @@
 from django.contrib.auth.views import redirect_to_login
-from django.core.paginator import InvalidPage, Paginator
+from django.core.paginator import Paginator
 from django.http import Http404
 from django.urls import reverse
 from django.views.generic import FormView, TemplateView
@@ -11,15 +11,7 @@ from questions.services import get_answers, get_questions
 
 def get_pagination_context(request, objects_list, objects_per_page, fragment=''):
     paginator = Paginator(objects_list, objects_per_page)
-    try:
-        current_page = int(request.GET.get('page', 1))
-    except (TypeError, ValueError):
-        raise Http404('Некорректный номер страницы')
-
-    try:
-        page = paginator.page(current_page)
-    except InvalidPage:
-        raise Http404('Страница не найдена')
+    page = paginator.get_page(request.GET.get('page', 1))
 
     query_params = request.GET.copy()
     path = request.get_full_path().split('?', 1)[0]
