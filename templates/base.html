@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Вопросы и ответы о веб-разработке. Учебный проект AskVK.">
+    <title>{% block title %}AskVK{% endblock %}</title>
+
+	  {% load static %}
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <a href="#content" class="visually-hidden-focusable position-absolute bg-body-secondary p-2">Перейти к содержимому</a>
+    <header class="bg-body-secondary py-3 border-bottom">
+      <div class="container d-flex flex-nowrap align-items-center gap-2 gap-lg-3">
+        <a href="{% url 'index' %}" class="navbar-brand text-white fw-bold fs-4">AskVK</a>
+        <form class="search-form d-flex gap-2 flex-grow-1" action="{% url 'index' %}" method="get" role="search">
+          <label for="search" class="visually-hidden">Поиск вопросов</label>
+          <input id="search" name="q" type="search" class="form-control" placeholder="Поиск вопросов" maxlength="150">
+          <button class="btn btn-outline-secondary" type="submit">Найти</button>
+        </form>
+        <div class="d-none d-lg-flex align-items-center gap-3 flex-shrink-0">
+          <a href="{% url 'ask' %}" class="btn btn-primary">Задать вопрос</a>
+          <div class="d-flex gap-3 align-items-center">
+            <a href="{% url 'login' %}" class="link-body-emphasis">Войти</a>
+            <a href="{% url 'signup' %}" class="btn btn-sm btn-outline-primary">Регистрация</a>
+          </div>
+        </div>
+        <div class="dropdown d-lg-none flex-shrink-0">
+          <button class="btn btn-outline-primary d-flex align-items-center p-2" type="button" id="user-menu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Меню пользователя">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 6h18M3 12h18M3 18h18"></path>
+            </svg>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-menu">
+            <li>
+              <a class="dropdown-item" href="{% url 'ask' %}">Задать вопрос</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'login' %}">Войти</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'signup' %}">Регистрация</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    <main class="container flex-grow-1 py-4" id="content">
+      <div class="row g-4">
+        <div class="col-12 col-md-8 col-xl-9">
+	        {% block content %}{% endblock %}
+        </div>
+        <aside class="col-12 col-md-4 col-xl-3" aria-label="Сообщество">
+          <section class="card mb-3">
+            <div class="card-body">
+              <h2 class="h5">Популярные теги</h2>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+	              {% for tag in popular_tags %}
+								<a class="badge text-bg-secondary border text-decoration-none" href="{% url 'index' %}?tag={{ tag.id }}">{{ tag.name }}</a>
+                {% endfor %}
+              </div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-body">
+              <h2 class="h5">Лучшие пользователи</h2>
+              <p class="small text-body-secondary">За эту неделю</p>
+              <ol class="list-unstyled mb-0" role="list">
+	              {% for user in best_members %}
+								<li class="d-flex gap-2 mb-2">
+									<span class="member-number flex-shrink-0" aria-hidden="true">{{ forloop.counter }}.</span>
+									<span>{{ user.firstname }} {{ user.lastname }} <span class="text-body-secondary small">· {{ user.questions }}</span>
+									</span>
+								</li>
+								{% endfor %}
+              </ol>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <footer class="border-top bg-body-secondary py-3 mt-4">
+      <div class="container d-flex flex-wrap justify-content-between gap-2 small text-body-secondary">
+        <span>© 2026 AskVK · Вопросы и ответы</span>
+        <span>Учебный проект · Статическая верстка</span>
+      </div>
+    </footer>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>

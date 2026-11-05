@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-md-8 col-xl-9">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+      <h1 class="h3 mb-0">Новые вопросы</h1>
+      <nav class="nav nav-pills" aria-label="Сортировка вопросов">
+        <a class="nav-link active" aria-current="page" href="?sort=new">Новые</a>
+        <a class="nav-link" href="?sort=popular">Популярные</a>
+      </nav>
+    </div>
+	  {% for question in questions %}
+    <article class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          {% include "includes/avatar.html" with author=question.author only %}
+          <div>
+            <span class="fw-medium">{{ question.author.firstname }} {{ question.author.lastname }}</span>
+            <div class="small text-body-secondary">
+              <time datetime="2026-10-22T10:30:00+03:00">{{ question.created_at|date:"d E Y, H:i" }}</time>
+            </div>
+          </div>
+        </div>
+        <h2 class="h5">
+          <a href="{% url 'question' id=question.id %}" class="text-decoration-none">{{ question.title }}</a>
+        </h2>
+        <p>{{ question.text }}</p>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+          {% include "includes/vote.html" with post=question kind="question" only %}
+          <a href="{% url 'question' id=question.id %}#answers">{{ question.answers_count }} ответа</a>
+          <div class="d-flex flex-wrap gap-1">
+	          {% for tag in question.tags %}
+            <a class="badge text-bg-secondary border text-decoration-none" href="{% url 'index' %}?tag={{ tag.id }}">{{ tag.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </article>
+	  {% endfor %}
+    {% if pagination.has_previous or pagination.has_next %}
+    <nav aria-label="Страницы вопросов" class="mt-4">
+      <ul class="pagination pagination-sm flex-wrap">
+	      {% if pagination.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="{{ pagination.previous_page_url }}">Назад</a>
+        </li>
+	      {% endif %}
+
+        {% for page in pagination.pages_list %}
+        <li class="page-item {% if page.number == pagination.current_page %}active{% endif %}" aria-current="page">
+          <a class="page-link" href="{{ page.url }}">{{ page.number }}</a>
+        </li>
+        {% endfor %}
+
+        {% if pagination.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="{{ pagination.next_page_url }}">Далее</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

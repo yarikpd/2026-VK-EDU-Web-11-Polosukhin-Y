@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %}{{ question.title }} — AskVK{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Вопрос</h1>
+<article class="card mb-3">
+  <div class="card-body">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      {% include "includes/avatar.html" with author=question.author only %}
+      <div>
+        <span class="fw-medium">{{ question.author.firstname }} {{ question.author.lastname }}</span>
+        <div class="small text-body-secondary">
+          <time datetime="{{ question.created_at|date:'c' }}">{{ question.created_at|timezone:'Europe/Moscow'|date:"d E Y, H:i" }}</time>
+        </div>
+      </div>
+    </div>
+    <h2 class="h4">{{ question.title }}</h2>
+    <p>{{ question.text|linebreaksbr }}</p>
+    {% if question.details %}<p>{{ question.details|linebreaksbr }}</p>{% endif %}
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      {% include "includes/vote.html" with post=question kind="question" only %}
+      <a href="#answers">Ответов: {{ question.answers_count }}</a>
+      <div class="d-flex flex-wrap gap-1">
+        {% for tag in question.tags %}
+          <a class="badge text-bg-secondary border text-decoration-none" href="{% url 'index' %}?tag={{ tag.id|urlencode }}">{{ tag.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</article>
+<h2 class="h4 mt-4 mb-3" id="answers">Ответы ({{ question.answers_count }})</h2>
+{% for answer in answers %}
+  <article class="card mb-3{% if answer.is_accepted %} border-success{% endif %}">
+    <div class="card-body">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        {% include "includes/avatar.html" with author=answer.author only %}
+        <div>
+          <h3 class="h6 mb-1">{{ answer.author.firstname }} {{ answer.author.lastname }}</h3>
+          <time class="small text-body-secondary" datetime="{{ answer.created_at|date:'c' }}">{{ answer.created_at|timezone:'Europe/Moscow'|date:"d E Y, H:i" }}</time>
+        </div>
+      </div>
+      <p>{{ answer.text|linebreaksbr }}</p>
+      <div class="d-flex flex-wrap gap-3 align-items-center">
+        {% include "includes/vote.html" with post=answer kind="answer" only %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="accepted-{{ answer.id }}"{% if answer.is_accepted %} checked{% endif %} disabled>
+          <label class="form-check-label" for="accepted-{{ answer.id }}">Правильный ответ</label>
+        </div>
+      </div>
+    </div>
+  </article>
+{% empty %}
+  <p class="text-body-secondary">Ответов пока нет.</p>
+{% endfor %}
+{% if pagination.has_previous or pagination.has_next %}
+<nav aria-label="Страницы ответов" class="mt-4">
+  <ul class="pagination pagination-sm flex-wrap">
+    <li class="page-item{% if not pagination.has_previous %} disabled{% endif %}">
+      {% if pagination.has_previous %}<a class="page-link" href="{{ pagination.previous_page_url }}">Назад</a>{% else %}<span class="page-link">Назад</span>{% endif %}
+    </li>
+    {% for page in pagination.pages_list %}
+      <li class="page-item{% if page.number == pagination.current_page %} active{% endif %}"{% if page.number == pagination.current_page %} aria-current="page"{% endif %}>
+        {% if page.number == pagination.current_page %}<span class="page-link">{{ page.number }}</span>{% else %}<a class="page-link" href="{{ page.url }}">{{ page.number }}</a>{% endif %}
+      </li>
+    {% endfor %}
+    <li class="page-item{% if not pagination.has_next %} disabled{% endif %}">
+      {% if pagination.has_next %}<a class="page-link" href="{{ pagination.next_page_url }}">Далее</a>{% else %}<span class="page-link">Далее</span>{% endif %}
+    </li>
+  </ul>
+</nav>
+{% endif %}
+<section class="card mt-4">
+  <div class="card-body">
+    <h2 class="h4">Ваш ответ</h2>
+    {% if can_answer %}
+      <form method="post" action="{% url 'question' id=question.id %}">
+        {% csrf_token %}
+        {% if form.errors %}
+          <div class="alert alert-danger" role="alert">Ответ не опубликован. Исправьте отмеченные поля.{{ form.non_field_errors }}</div>
+        {% endif %}
+        {% if submission_checked %}
+          <div class="alert alert-info" role="status">Данные проверены. Сохранение ответов в базу данных пока не подключено.</div>
+        {% endif %}
+        <div class="mb-3">
+          <label class="form-label" for="answer">Текст ответа</label>
+          <textarea class="form-control{% if form.body.errors %} is-invalid{% endif %}" id="answer" name="body" rows="5" maxlength="10000" required aria-describedby="answer-help{% if form.body.errors %} answer-error{% endif %}"{% if form.body.errors %} aria-invalid="true"{% endif %}>{{ form.body.value|default_if_none:'' }}</textarea>
+          <div class="form-text" id="answer-help">До 10 000 символов. Объясните, почему ваше решение помогает.</div>
+          {% if form.body.errors %}<div class="invalid-feedback" id="answer-error">{{ form.body.errors }}</div>{% endif %}
+        </div>
+        <button class="btn btn-primary" type="submit">Ответить</button>
+      </form>
+    {% else %}
+      <p class="small mb-0">Для отправки ответа <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">войдите</a> или <a href="{% url 'signup' %}">зарегистрируйтесь</a>.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
