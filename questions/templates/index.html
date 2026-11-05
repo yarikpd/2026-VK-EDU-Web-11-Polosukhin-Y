@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-md-8 col-xl-9">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+      <h1 class="h3 mb-0">Новые вопросы</h1>
+      <nav class="nav nav-pills" aria-label="Сортировка вопросов">
+        <a class="nav-link active" aria-current="page" href="?sort=new">Новые</a>
+        <a class="nav-link" href="?sort=popular">Популярные</a>
+      </nav>
+    </div>
+	  {% for question in questions %}
+    <article class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64" class="rounded flex-shrink-0" role="img" aria-label="Аватар: {{ question.author.firstname }} {{ question.author.lastname }}">
+            <rect width="64" height="64" rx="10" fill="{{ question.author.avatar_color }}"></rect>
+            <text x="32" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="white">{{ question.author.initials }}</text>
+          </svg>
+          <div>
+            <span class="fw-medium">{{ question.author.firstname }} {{ question.author.lastname }}</span>
+            <div class="small text-body-secondary">
+              <time datetime="2026-10-22T10:30:00+03:00">{{ question.created_at|date:"d E Y, H:i" }}</time>
+            </div>
+          </div>
+        </div>
+        <h2 class="h5">
+          <a href="{% url 'question' id=1 %}" class="text-decoration-none">{{ question.title }}</a>
+        </h2>
+        <p>{{ question.text }}</p>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+          <fieldset class="m-0">
+            <legend class="visually-hidden">Оценка публикации</legend>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Голосование">
+
+	            {% if question.vote == 'up' %}
+              <input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="up-q{{ question.id }}" checked>
+              {% else %}
+							<input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="up-q{{ question.id }}">
+							{% endif %}
+
+              <label class="btn btn-outline-primary" for="up-q{{ question.id }}">
+                <span aria-hidden="true">+</span>
+                <span class="visually-hidden">Нравится</span>
+              </label>
+              <input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="none-q{{ question.id }}">
+              <label class="btn btn-outline-secondary" for="none-q{{ question.id }}">{{ question.rating }}<span class="visually-hidden"> — рейтинг, сбросить голос</span>
+              </label>
+
+              {% if question.vote == 'down' %}
+              <input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="down-q{{ question.id }}" checked>
+            	{% else %}
+              <input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="down-q{{ question.id }}">
+            	{% endif %}
+
+              <label class="btn btn-outline-primary" for="down-q{{ question.id }}">
+                <span aria-hidden="true">−</span>
+                <span class="visually-hidden">Не нравится</span>
+              </label>
+            </div>
+          </fieldset>
+          <a href="{% url 'question' id=question.id %}#answers">{{ question.answers_count }} ответа</a>
+          <div class="d-flex flex-wrap gap-1">
+	          {% for tag in question.tags %}
+            <a class="badge text-bg-secondary border text-decoration-none" href="{% url 'index' %}?tag={{ tag.id }}">{{ tag.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </article>
+	  {% endfor %}
+    <nav aria-label="Страницы вопросов" class="mt-4">
+      <ul class="pagination pagination-sm flex-wrap">
+	      {% if pagination.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="{{ pagination.previous_page_url }}">Назад</a>
+        </li>
+	      {% endif %}
+
+        {% for page in pagination.pages_list %}
+        <li class="page-item {% if page.number == pagination.current_page %}active{% endif %}" aria-current="page">
+          <a class="page-link" href="{{ page.url }}">{{ page.number }}</a>
+        </li>
+        {% endfor %}
+
+        {% if pagination.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="{{ pagination.next_page_url }}">Далее</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>
+{% endblock %}
