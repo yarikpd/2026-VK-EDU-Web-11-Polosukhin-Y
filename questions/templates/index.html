@@ -13,10 +13,7 @@
     <article class="card mb-3">
       <div class="card-body">
         <div class="d-flex align-items-center gap-3 mb-3">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64" class="rounded flex-shrink-0" role="img" aria-label="Аватар: {{ question.author.firstname }} {{ question.author.lastname }}">
-            <rect width="64" height="64" rx="10" fill="{{ question.author.avatar_color }}"></rect>
-            <text x="32" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="white">{{ question.author.initials }}</text>
-          </svg>
+          {% include "includes/avatar.html" with author=question.author only %}
           <div>
             <span class="fw-medium">{{ question.author.firstname }} {{ question.author.lastname }}</span>
             <div class="small text-body-secondary">
@@ -25,40 +22,11 @@
           </div>
         </div>
         <h2 class="h5">
-          <a href="{% url 'question' id=1 %}" class="text-decoration-none">{{ question.title }}</a>
+          <a href="{% url 'question' id=question.id %}" class="text-decoration-none">{{ question.title }}</a>
         </h2>
         <p>{{ question.text }}</p>
         <div class="d-flex flex-wrap align-items-center gap-3">
-          <fieldset class="m-0">
-            <legend class="visually-hidden">Оценка публикации</legend>
-            <div class="btn-group btn-group-sm" role="group" aria-label="Голосование">
-
-	            {% if question.vote == 'up' %}
-              <input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="up-q{{ question.id }}" checked>
-              {% else %}
-							<input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="up-q{{ question.id }}">
-							{% endif %}
-
-              <label class="btn btn-outline-primary" for="up-q{{ question.id }}">
-                <span aria-hidden="true">+</span>
-                <span class="visually-hidden">Нравится</span>
-              </label>
-              <input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="none-q{{ question.id }}">
-              <label class="btn btn-outline-secondary" for="none-q{{ question.id }}">{{ question.rating }}<span class="visually-hidden"> — рейтинг, сбросить голос</span>
-              </label>
-
-              {% if question.vote == 'down' %}
-              <input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="down-q{{ question.id }}" checked>
-            	{% else %}
-              <input class="btn-check" type="radio" name="vote-q{{ question.id }}" id="down-q{{ question.id }}">
-            	{% endif %}
-
-              <label class="btn btn-outline-primary" for="down-q{{ question.id }}">
-                <span aria-hidden="true">−</span>
-                <span class="visually-hidden">Не нравится</span>
-              </label>
-            </div>
-          </fieldset>
+          {% include "includes/vote.html" with post=question kind="question" only %}
           <a href="{% url 'question' id=question.id %}#answers">{{ question.answers_count }} ответа</a>
           <div class="d-flex flex-wrap gap-1">
 	          {% for tag in question.tags %}
@@ -69,6 +37,7 @@
       </div>
     </article>
 	  {% endfor %}
+    {% if pagination.has_previous or pagination.has_next %}
     <nav aria-label="Страницы вопросов" class="mt-4">
       <ul class="pagination pagination-sm flex-wrap">
 	      {% if pagination.has_previous %}
@@ -90,6 +59,7 @@
         {% endif %}
       </ul>
     </nav>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

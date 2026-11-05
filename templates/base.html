@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Вопросы и ответы о веб-разработке. Учебный проект AskVK.">
-    <title>Общий макет — AskVK</title>
+    <title>{% block title %}Общий макет — AskVK{% endblock %}</title>
 
 	  {% load static %}
     <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
@@ -51,7 +51,6 @@
     <main class="container flex-grow-1 py-4" id="content">
       <div class="row g-4">
         <div class="col-12 col-md-8 col-xl-9">
-          <!-- Django: здесь будет блок content с содержимым конкретной страницы. -->
 	        {% block content %}{% endblock %}
         </div>
         <aside class="col-12 col-md-4 col-xl-3" aria-label="Сообщество">
