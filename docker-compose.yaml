@@ -32,6 +32,7 @@ services:
     environment:
       POSTGRES_HOST: askvk-postgres
       POSTGRES_PORT: 5432
+      DJANGO_DEBUG: 'False'
     depends_on:
       - askvk-postgres
 
