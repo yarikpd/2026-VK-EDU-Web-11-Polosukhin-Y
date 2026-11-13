@@ -164,24 +164,3 @@ docker-compose.yaml     Django, PostgreSQL и nginx
 requirements.txt        Python-зависимости
 .env.example            пример настроек окружения
 ```
-
-## Проверки
-
-В `tests/responsive/` находится актуальный набор e2e для Django: 18 сценариев на трёх ширинах (375, 768 и 1200 px), всего 54 проверки. Тесты проверяют адаптивность, статику, маршруты, HTTP 404 для неизвестного вопроса, подстановку допустимой страницы при ошибках пагинации и POST формы вопроса с CSRF.
-
-После установки Python-зависимостей в `.venv`:
-
-```sh
-cd tests/responsive
-npm ci
-npx @e2e-dev/web install chromium
-npx e2e run
-```
-
-По умолчанию e2e сам запускает Django на свободных портах с временными SQLite-базами и тестовыми настройками, без чтения `.env` и доступа к PostgreSQL проекта. Для проверки уже запущенного приложения через nginx:
-
-```sh
-E2E_BASE_URL=http://localhost npx e2e run
-```
-
-ИИ-сценарий через ChatGPT (`gpt-6-luna`) обновлён под Django, но запускается только отдельно и вручную. Подробности, команды и расположение отчётов — в [tests/responsive/README.md](tests/responsive/README.md).
