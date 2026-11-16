@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h3 mb-4">Новый вопрос</h1>
+<div class="card form-card">
+  <div class="card-body p-3 p-lg-4">
+    <form method="post" action="{% url 'ask' %}">
+      {% csrf_token %}
+      {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+          Вопрос не опубликован. Исправьте отмеченные поля.
+          {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+        </div>
+      {% endif %}
+      {% if submission_checked %}
+        <div class="alert alert-info" role="status">
+          Данные проверены. Сохранение вопросов в базу данных пока не подключено.
+        </div>
+      {% endif %}
+      <div class="mb-3">
+        <label class="form-label" for="title">Заголовок</label>
+        <input class="form-control{% if form.title.errors %} is-invalid{% endif %}" id="title" name="title" type="text" value="{{ form.title.value|default_if_none:'' }}" maxlength="150" required aria-describedby="title-help{% if form.title.errors %} title-error{% endif %}"{% if form.title.errors %} aria-invalid="true"{% endif %}>
+        <div class="form-text" id="title-help">Кратко сформулируйте вопрос. Не более 150 символов.</div>
+        {% if form.title.errors %}
+          <div class="invalid-feedback" id="title-error">{% for error in form.title.errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="body">Текст вопроса</label>
+        <textarea class="form-control{% if form.body.errors %} is-invalid{% endif %}" id="body" name="body" rows="6" maxlength="10000" required aria-describedby="body-help{% if form.body.errors %} body-error{% endif %}"{% if form.body.errors %} aria-invalid="true"{% endif %}>{{ form.body.value|default_if_none:'' }}</textarea>
+        <div class="form-text" id="body-help">Опишите задачу, ожидаемый результат и то, что уже пробовали. До 10 000 символов.</div>
+        {% if form.body.errors %}
+          <div class="invalid-feedback" id="body-error">{% for error in form.body.errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="tags">Теги</label>
+        <input class="form-control{% if form.tags.errors %} is-invalid{% endif %}" id="tags" name="tags" type="text" value="{{ form.tags.value|default_if_none:'' }}" maxlength="94" required aria-describedby="tags-help{% if form.tags.errors %} tags-error{% endif %}"{% if form.tags.errors %} aria-invalid="true"{% endif %}>
+        <div class="form-text" id="tags-help">Не более 3 тегов через запятую. До 30 символов в каждом.</div>
+        {% if form.tags.errors %}
+          <div class="invalid-feedback" id="tags-error">{% for error in form.tags.errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+      </div>
+      <button class="btn btn-primary" type="submit">Опубликовать</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

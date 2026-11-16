@@ -1,0 +1,17 @@
+{% if form.errors %}
+  <div class="alert alert-danger" role="alert">
+    {{ error_message }}
+    {{ form.non_field_errors }}
+  </div>
+{% endif %}
+{% if submission_checked %}
+  <div class="alert alert-info" role="status">{{ checked_message }}</div>
+{% endif %}
+{% for field in form %}
+  <div class="mb-3">
+    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+    {% if field.help_text %}<div class="form-text" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</div>{% endif %}
+    {% if field.errors %}<div class="invalid-feedback" id="{{ field.auto_id }}_error">{{ field.errors }}</div>{% endif %}
+  </div>
+{% endfor %}

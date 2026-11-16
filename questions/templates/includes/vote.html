@@ -1,0 +1,11 @@
+<fieldset class="m-0">
+  <legend class="visually-hidden">Оценка публикации</legend>
+  <div class="btn-group btn-group-sm" role="group" aria-label="Голосование">
+    <input class="btn-check" type="radio" name="vote-{{ kind }}-{{ post.id }}" id="up-{{ kind }}-{{ post.id }}"{% if post.vote == 'up' %} checked{% endif %}>
+    <label class="btn btn-outline-primary" for="up-{{ kind }}-{{ post.id }}"><span aria-hidden="true">+</span><span class="visually-hidden">Нравится</span></label>
+    <input class="btn-check" type="radio" name="vote-{{ kind }}-{{ post.id }}" id="none-{{ kind }}-{{ post.id }}"{% if post.vote == 'none' %} checked{% endif %}>
+    <label class="btn btn-outline-secondary" for="none-{{ kind }}-{{ post.id }}">{{ post.rating }}<span class="visually-hidden"> — рейтинг, сбросить голос</span></label>
+    <input class="btn-check" type="radio" name="vote-{{ kind }}-{{ post.id }}" id="down-{{ kind }}-{{ post.id }}"{% if post.vote == 'down' %} checked{% endif %}>
+    <label class="btn btn-outline-primary" for="down-{{ kind }}-{{ post.id }}"><span aria-hidden="true">−</span><span class="visually-hidden">Не нравится</span></label>
+  </div>
+</fieldset>
