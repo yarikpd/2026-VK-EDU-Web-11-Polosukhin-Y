@@ -5,37 +5,15 @@ from django.urls import reverse
 from django.views.generic import FormView, TemplateView
 
 from questions.forms import AnswerForm, QuestionForm
-from questions.mixins import SidebarContextMixin
-from questions.services import get_answers, get_questions
+from questions.services import get_answers, get_questions, get_popular_tags
 
 
-def get_pagination_context(request, objects_list, objects_per_page, fragment=''):
-    paginator = Paginator(objects_list, objects_per_page)
-    page = paginator.get_page(request.GET.get('page', 1))
-
-    query_params = request.GET.copy()
-    path = request.get_full_path().split('?', 1)[0]
-
-    def page_url(number):
-        query_params['page'] = str(number)
-        anchor = f'#{fragment}' if fragment else ''
-        return f'{path}?{query_params.urlencode()}{anchor}'
-
-    return {
-        'objects_list': page.object_list,
-        'current_page': page.number,
-        'pages_list': [
-            {'number': number, 'url': page_url(number)}
-            for number in paginator.page_range
-        ],
-        'has_previous': page.has_previous(),
-        'previous_page_url': page_url(page.previous_page_number()) if page.has_previous() else None,
-        'has_next': page.has_next(),
-        'next_page_url': page_url(page.next_page_number()) if page.has_next() else None,
-    }
+def paginate(objects_list, request, per_page=10):
+    paginator = Paginator(objects_list, per_page)
+    return paginator.get_page(request.GET.get('page', 1))
 
 
-class IndexView(SidebarContextMixin, TemplateView):
+class IndexView(TemplateView):
     template_name = 'index.html'
     questions_per_page = 10
 
@@ -44,18 +22,12 @@ class IndexView(SidebarContextMixin, TemplateView):
 
         questions_list = get_questions()
 
-        pagination = get_pagination_context(
-            self.request, questions_list, self.questions_per_page
-        )
-        context.update({
-            'questions': pagination['objects_list'],
-            'pagination': pagination,
-        })
+        context['page_obj'] = paginate(questions_list, self.request, self.questions_per_page)
 
         return context
 
 
-class AskView(SidebarContextMixin, FormView):
+class AskView(FormView):
     template_name = 'ask.html'
     form_class = QuestionForm
 
@@ -66,7 +38,7 @@ class AskView(SidebarContextMixin, FormView):
         )
 
 
-class QuestionView(SidebarContextMixin, FormView):
+class QuestionView(FormView):
     template_name = 'question.html'
     form_class = AnswerForm
     answers_per_page = 5
@@ -82,15 +54,11 @@ class QuestionView(SidebarContextMixin, FormView):
         question = self.get_question()
         answers = get_answers(question['id'])
         question['answers_count'] = len(answers)
-        pagination = get_pagination_context(
-            self.request, answers, self.answers_per_page, fragment='answers'
-        )
 
         context.update({
             'question': question,
-            'answers': pagination['objects_list'],
             'can_answer': self.request.user.is_authenticated,
-            'pagination': pagination,
+            'page_obj': paginate(answers, self.request, self.answers_per_page),
         })
         return context
 
@@ -105,3 +73,37 @@ class QuestionView(SidebarContextMixin, FormView):
         return self.render_to_response(
             self.get_context_data(form=form, submission_checked=True)
         )
+
+class HotView(TemplateView):
+    template_name = 'hot.html'
+    questions_per_page = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        questions_list = get_questions()
+
+        context['page_obj'] = paginate(questions_list, self.request, self.questions_per_page)
+
+        return context
+
+class TagView(TemplateView):
+    template_name = 'tag.html'
+    questions_per_page = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag_name = self.kwargs['tag']
+
+        # TODO: Implement DB
+        tags = get_popular_tags()
+        for tag in tags:
+            if tag['id'] == tag_name:
+                context['tag'] = tag
+                break
+
+        questions_list = get_questions()
+
+        context['page_obj'] = paginate(questions_list, self.request, self.questions_per_page)
+
+        return context

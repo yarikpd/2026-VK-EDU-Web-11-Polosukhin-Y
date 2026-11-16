@@ -3,10 +3,9 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import FormView
 
 from core.forms import LoginForm, ProfileForm, SignupForm
-from questions.mixins import SidebarContextMixin
 
 
-class AccountFormView(SidebarContextMixin, FormView):
+class AccountFormView(FormView):
     def form_valid(self, form):
         # TODO: Implement DB
         return self.render_to_response(

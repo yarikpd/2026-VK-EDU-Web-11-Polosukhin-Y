@@ -5,8 +5,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 WORKDIR /app
-COPY . .
-
-RUN chmod +x ./scripts/entry.sh
-
 ENTRYPOINT ["sh", "./scripts/entry.sh"]

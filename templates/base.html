@@ -59,7 +59,7 @@
               <h2 class="h5">Популярные теги</h2>
               <div class="d-flex flex-wrap gap-2 mt-3">
 	              {% for tag in popular_tags %}
-								<a class="badge text-bg-secondary border text-decoration-none" href="{% url 'index' %}?tag={{ tag.id }}">{{ tag.name }}</a>
+								<a class="badge text-bg-secondary border text-decoration-none" href="{% url 'tag' tag.id %}">{{ tag.name }}</a>
                 {% endfor %}
               </div>
             </div>

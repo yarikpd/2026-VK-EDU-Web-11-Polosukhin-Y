@@ -1,0 +1,9 @@
+{% extends "questions_list.html" %}
+{% block header %}
+<h1 class="h3 mb-0">Лучшие вопросы</h1>
+
+<nav class="nav nav-pills" aria-label="Сортировка вопросов">
+  <a class="nav-link" aria-current="page" href="{% url 'index' %}">Новые</a>
+  <a class="nav-link active" href="{% url 'hot' %}">Популярные</a>
+</nav>
+{% endblock %}
