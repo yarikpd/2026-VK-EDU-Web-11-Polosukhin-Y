@@ -24,8 +24,18 @@
         <div class="d-none d-lg-flex align-items-center gap-3 flex-shrink-0">
           <a href="{% url 'ask' %}" class="btn btn-primary">Задать вопрос</a>
           <div class="d-flex gap-3 align-items-center">
-            <a href="{% url 'login' %}" class="link-body-emphasis">Войти</a>
-            <a href="{% url 'signup' %}" class="btn btn-sm btn-outline-primary">Регистрация</a>
+            {% if profile %}
+              <span class="d-flex align-items-center gap-2">
+                {% include "includes/avatar.html" with author=profile size=32 only %}
+	              <span class="fw-medium"><a href="{% url 'profile' %}" class="link-body-emphasis">{{ profile.nickname }}</a></span>
+              </span>
+              <a href="{% url 'logout' %}" class="btn btn-sm btn-primary d-inline-flex align-items-center p-2" aria-label="Выйти" title="Выйти">
+                <img src="{% static 'img/logout.svg' %}" width="20" height="20" alt="">
+              </a>
+            {% else %}
+              <a href="{% url 'login' %}" class="link-body-emphasis">Войти</a>
+              <a href="{% url 'signup' %}" class="btn btn-sm btn-outline-primary">Регистрация</a>
+            {% endif %}
           </div>
         </div>
         <div class="dropdown d-lg-none flex-shrink-0">
@@ -35,15 +45,21 @@
             </svg>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-menu">
+            {% if profile %}
+            <li class="dropdown-header d-flex align-items-center gap-2">
+              {% include "includes/avatar.html" with author=profile size=32 only %}
+              <span class="fw-medium text-body"><a href="{% url 'profile' %}" class="link-body-emphasis">{{ profile.nickname }}</a></span>
+            </li>
+            {% endif %}
             <li>
               <a class="dropdown-item" href="{% url 'ask' %}">Задать вопрос</a>
             </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'login' %}">Войти</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'signup' %}">Регистрация</a>
-            </li>
+            {% if profile %}
+              <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+            {% else %}
+              <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
+              <li><a class="dropdown-item" href="{% url 'signup' %}">Регистрация</a></li>
+            {% endif %}
           </ul>
         </div>
       </div>

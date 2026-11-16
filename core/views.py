@@ -1,3 +1,5 @@
+from typing import TypedDict
+
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import FormView
@@ -43,6 +45,25 @@ class SignupView(AccountFormView):
         'checked_message': 'Данные проверены. Создание аккаунта и сохранение аватара пока не подключены.',
     }
 
+class Profile(TypedDict):
+    firstname: str
+    lastname: str
+    initials: str
+    avatar_color: str
+    email: str
+    nickname: str
+
+def get_profile() -> Profile:
+    # TODO: Implement DB
+    return {
+        'firstname': 'Ярослав',
+        'lastname': 'Полосухин',
+        'initials': 'ЯП',
+        'avatar_color': '#70545e',
+        'email': 'yaroslav@example.com',
+        'nickname': 'yaroslav',
+    }
+
 
 class ProfileView(AccountFormView):
     template_name = 'profile.html'
@@ -54,24 +75,14 @@ class ProfileView(AccountFormView):
         'checked_message': 'Данные проверены. Сохранение профиля и аватара пока не подключено.',
     }
 
-    def get_profile(self):
-        # TODO: Implement DB
-        return {
-            'firstname': 'Ярослав',
-            'lastname': 'Полосухин',
-            'initials': 'ЯП',
-            'avatar_color': '#70545e',
-            'email': 'yaroslav@example.com',
-            'nickname': 'yaroslav',
-        }
-
     def get_initial(self):
         initial = super().get_initial()
-        profile = self.get_profile()
+        profile = get_profile()
         initial.update(email=profile['email'], nickname=profile['nickname'])
         return initial
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['profile'] = self.get_profile()
+        profile = get_profile()
+        context['profile'] = profile
         return context

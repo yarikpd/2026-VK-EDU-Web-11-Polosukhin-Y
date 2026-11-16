@@ -24,7 +24,7 @@
       <a href="{% url 'question' id=question.id %}#answers">{{ question.answers_count }} ответа</a>
       <div class="d-flex flex-wrap gap-1">
         {% for tag in question.tags %}
-        <a class="badge text-bg-secondary border text-decoration-none" href="{% url 'index' %}?tag={{ tag.id }}">{{ tag.name }}</a>
+        <a class="badge text-bg-secondary border text-decoration-none" href="{% url 'tag' tag=tag.id %}">{{ tag.name }}</a>
         {% endfor %}
       </div>
     </div>

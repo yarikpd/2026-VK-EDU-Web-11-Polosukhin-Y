@@ -1,9 +1,54 @@
 from datetime import datetime
+from typing import Literal, NotRequired, TypedDict
 
 
-def get_popular_tags():
+Vote = Literal['up', 'down', 'none']
+
+
+class Tag(TypedDict):
+    id: str
+    name: str
+
+
+class PopularMember(TypedDict):
+    firstname: str
+    lastname: str
+    questions: int
+
+
+class Author(TypedDict):
+    firstname: str
+    lastname: str
+    initials: str
+    avatar_color: str
+
+
+class Question(TypedDict):
+    id: int
+    title: str
+    text: str
+    details: NotRequired[str]
+    author: Author
+    created_at: datetime
+    rating: int
+    answers_count: int
+    vote: Vote
+    tags: list[Tag]
+
+
+class Answer(TypedDict):
+    id: int
+    author: Author
+    text: str
+    created_at: datetime
+    rating: int
+    vote: Vote
+    is_accepted: bool
+
+
+def get_popular_tags() -> list[Tag]:
     # TODO: Implement DB
-    tags = [
+    tags: list[Tag] = [
         {'id': 'python', 'name': 'Python'},
         {'id': 'django', 'name': 'Django'},
         {'id': 'bootstrap', 'name': 'Bootstrap'},
@@ -17,9 +62,10 @@ def get_popular_tags():
     ]
     return tags
 
-def get_popular_members():
+
+def get_popular_members() -> list[PopularMember]:
     # TODO: Implement DB
-    members = [
+    members: list[PopularMember] = [
         {'firstname': 'Алексей', 'lastname': 'Иванов', 'questions': 128},
         {'firstname': 'Мария', 'lastname': 'Петрова', 'questions': 115},
         {'firstname': 'Дмитрий', 'lastname': 'Смирнов', 'questions': 98},
@@ -33,9 +79,10 @@ def get_popular_members():
     ]
     return members
 
-def get_questions():
+
+def get_questions() -> list[Question]:
     # TODO: Implement DB
-    questions = [
+    questions: list[Question] = [
         {
             'id': 1,
             'details': 'В шаблоне использую относительный путь к файлу. Подскажите, какие настройки нужно проверить и для чего нужен тег static?',
@@ -275,10 +322,11 @@ def get_questions():
     return questions
 
 
-def get_answers(question_id):
+def get_answers(question_id: int) -> list[Answer]:
     # TODO: Implement DB
     authors = {question['id']: question['author'] for question in get_questions()}
-    answers = {
+    created_at = datetime.fromisoformat('2026-10-22T11:00:00+03:00')
+    answers_by_question: dict[int, list[Answer]] = {
         1: [
             {
                 'id': 1,
@@ -287,6 +335,7 @@ def get_answers(question_id):
                 'rating': 16,
                 'vote': 'up',
                 'is_accepted': True,
+                'created_at': created_at,
             },
             {
                 'id': 2,
@@ -295,6 +344,7 @@ def get_answers(question_id):
                 'rating': 5,
                 'vote': 'none',
                 'is_accepted': False,
+                'created_at': created_at,
             },
             {
                 'id': 3,
@@ -303,6 +353,7 @@ def get_answers(question_id):
                 'rating': 2,
                 'vote': 'none',
                 'is_accepted': False,
+                'created_at': created_at,
             },
             {
                 'id': 6,
@@ -311,6 +362,7 @@ def get_answers(question_id):
                 'rating': 4,
                 'vote': 'none',
                 'is_accepted': False,
+                'created_at': created_at,
             },
             {
                 'id': 7,
@@ -319,6 +371,7 @@ def get_answers(question_id):
                 'rating': 3,
                 'vote': 'none',
                 'is_accepted': False,
+                'created_at': created_at,
             },
             {
                 'id': 8,
@@ -327,6 +380,7 @@ def get_answers(question_id):
                 'rating': 1,
                 'vote': 'none',
                 'is_accepted': False,
+                'created_at': created_at,
             },
             {
                 'id': 9,
@@ -335,6 +389,7 @@ def get_answers(question_id):
                 'rating': 0,
                 'vote': 'none',
                 'is_accepted': False,
+                'created_at': created_at,
             },
         ],
         2: [
@@ -345,6 +400,7 @@ def get_answers(question_id):
                 'rating': 7,
                 'vote': 'none',
                 'is_accepted': True,
+                'created_at': created_at,
             },
             {
                 'id': 5,
@@ -353,9 +409,9 @@ def get_answers(question_id):
                 'rating': 3,
                 'vote': 'none',
                 'is_accepted': False,
+                'created_at': created_at,
             },
         ],
-    }.get(question_id, [])
-    for answer in answers:
-        answer['created_at'] = datetime.fromisoformat('2026-10-22T11:00:00+03:00')
+    }
+    answers = answers_by_question.get(question_id, [])
     return sorted(answers, key=lambda answer: (-answer['rating'], answer['created_at']))

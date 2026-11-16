@@ -19,7 +19,7 @@ class QuestionForm(forms.Form):
         error_messages={'required': 'Укажите хотя бы один тег.'},
     )
 
-    def clean_tags(self):
+    def clean_tags(self) -> list[str]:
         tags = [tag.strip() for tag in self.cleaned_data['tags'].split(',')]
         if not all(tags):
             raise forms.ValidationError('Укажите непустые теги через запятую.')

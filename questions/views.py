@@ -1,14 +1,14 @@
 from django.contrib.auth.views import redirect_to_login
-from django.core.paginator import Paginator
-from django.http import Http404
+from django.core.paginator import Paginator, Page
+from django.http import Http404, HttpResponseRedirect, HttpRequest
 from django.urls import reverse
 from django.views.generic import FormView, TemplateView
 
 from questions.forms import AnswerForm, QuestionForm
-from questions.services import get_answers, get_questions, get_popular_tags
+from questions.services import get_answers, get_questions, get_popular_tags, Question
 
 
-def paginate(objects_list, request, per_page=10):
+def paginate(objects_list: list, request: HttpRequest, per_page: int = 10) -> Page:
     paginator = Paginator(objects_list, per_page)
     return paginator.get_page(request.GET.get('page', 1))
 
@@ -43,7 +43,7 @@ class QuestionView(FormView):
     form_class = AnswerForm
     answers_per_page = 5
 
-    def get_question(self):
+    def get_question(self) -> Question:
         for question in get_questions():
             if question['id'] == self.kwargs['id']:
                 return question
@@ -107,3 +107,7 @@ class TagView(TemplateView):
         context['page_obj'] = paginate(questions_list, self.request, self.questions_per_page)
 
         return context
+
+class LogoutView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect(reverse('index'))
