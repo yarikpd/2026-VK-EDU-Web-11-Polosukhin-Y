@@ -3,7 +3,7 @@ services:
     image: postgres:latest
     container_name: askvk-postgres
     env_file:
-      - .env
+      - .env.docker
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
@@ -28,11 +28,7 @@ services:
     expose:
       - 8000
     env_file:
-      - .env
-    environment:
-      POSTGRES_HOST: askvk-postgres
-      POSTGRES_PORT: 5432
-      DJANGO_DEBUG: 'False'
+      - .env.docker
     depends_on:
       askvk-postgres:
         condition: service_healthy

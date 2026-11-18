@@ -4,11 +4,14 @@
 
 ## Подготовка переменных окружения
 
-Если `.env` ещё нет, создайте его из примера:
+Если `.env.local` или `.env.docker` ещё нет, создайте их из примера:
 
 ```sh
-cp .env.example .env
+cp .env.example .env.local
+cp .env.example .env.docker
 ```
+
+`.env.local` используется при локальном запуске через Django, `.env.docker` — при запуске через Docker Compose.
 
 Новый секретный ключ можно получить командой:
 
@@ -38,7 +41,7 @@ docker compose up -d --wait askvk-postgres
 
 PostgreSQL из Compose доступна на **порту 5430 хоста**.
 
-Если используется собственная PostgreSQL, вставьте её реальные адрес и порт в `.env`.
+Если используется собственная PostgreSQL, вставьте её реальные адрес и порт в `.env.local`.
 
 ### 3. Запустить сервер
 
@@ -50,7 +53,7 @@ python manage.py runserver 127.0.0.1:8000
 
 ## Запуск через Docker Compose
 
-Нужен запущенный Docker Engine с Compose и подготовленный `.env`.
+Нужен запущенный Docker Engine с Compose и подготовленный `.env.local`.
 
 ```sh
 docker compose up --build
