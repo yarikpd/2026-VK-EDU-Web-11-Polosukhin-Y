@@ -30,6 +30,8 @@
     </div>
   </div>
 </article>
+{% empty %}
+  <p class="text-body-secondary">Пока нет ни одного вопроса.</p>
 {% endfor %}
 {% if page_obj.has_other_pages %}
 <nav aria-label="Страницы вопросов" class="mt-4">

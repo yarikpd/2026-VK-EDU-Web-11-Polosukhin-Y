@@ -1,7 +1,7 @@
 from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import Paginator, Page
-from django.db import models
-from django.http import Http404, HttpResponseRedirect, HttpRequest
+from django.http import HttpResponseRedirect, HttpRequest
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import FormView, TemplateView
 
@@ -45,17 +45,12 @@ class QuestionView(FormView):
     answers_per_page = 5
 
     def get_question(self) -> Question:
-        questions = Question.objects.annotate(
-            answers_count=models.Count('answers'),
-        ).filter(id=self.kwargs['id'])
-        if not questions.exists():
-            raise Http404('Вопрос не найден')
-        return questions.first()
+        return get_object_or_404(Question.objects.for_display(), pk=self.kwargs['id'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         question = self.get_question()
-        answers = list(Answer.objects.get_by_question(question))
+        answers = Answer.objects.get_by_question(question)
 
         context.update({
             'question': question,
@@ -95,12 +90,10 @@ class TagView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tags = Tag.objects.get_queryset().filter(name=self.kwargs['tag'])
-        if not tags.exists():
-            raise Http404('Тег не найден')
-        context['tag'] = tags.first()
+        tag = get_object_or_404(Tag, name=self.kwargs['tag'])
+        context['tag'] = tag
 
-        questions_list = Question.objects.by_tag(context['tag'].name)
+        questions_list = Question.objects.by_tag(tag.name)
 
         context['page_obj'] = paginate(questions_list, self.request, self.questions_per_page)
 

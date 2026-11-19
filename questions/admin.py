@@ -41,7 +41,10 @@ class AnswerAdmin(admin.ModelAdmin):
     list_display = ('question', 'author', 'text', 'is_accepted', 'created_at')
     search_fields = ('text', 'author__username', 'author__email', 'question__title')
     list_filter = ('created_at', 'question', 'author', 'is_accepted')
-    list_select_related = ('author', 'question')
+    ordering = ('-pk',)
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Answer]:
+        return super().get_queryset(request).select_related('author', 'question')
 
 @admin.register(QuestionVote)
 class QuestionVoteAdmin(admin.ModelAdmin):
@@ -54,5 +57,6 @@ class QuestionVoteAdmin(admin.ModelAdmin):
 class AnswerVoteAdmin(admin.ModelAdmin):
     list_display = ('answer', 'user', 'value', 'created_at')
     search_fields = ('answer__text', 'user__username', 'user__email')
-    list_filter = ('created_at', 'answer', 'user')
+    list_filter = ('created_at', 'value', 'user')
     list_select_related = ('answer__question', 'answer__author', 'user')
+    autocomplete_fields = ('answer',)

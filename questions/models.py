@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.functions import Coalesce
 from django.urls import reverse
 
 
@@ -33,20 +34,26 @@ class Tag(models.Model):
 
 
 class QuestionManager(models.Manager['Question']):
+    def for_display(self) -> models.QuerySet['Question']:
+        vote_totals = (
+            QuestionVote.objects.filter(question_id=models.OuterRef('pk'))
+            .values('question_id')
+            .annotate(total=models.Sum('value', output_field=models.IntegerField()))
+            .values('total')
+        )
+        return self.get_queryset().select_related('author__profile').prefetch_related('tags').annotate(
+            answers_count=models.Count('answers'),
+            rating=Coalesce(models.Subquery(vote_totals), 0),
+        )
+
     def new(self) -> models.QuerySet['Question']:
-        return self.get_queryset().annotate(
-            rating=models.Sum('votes__value', default=0),
-        ).order_by('-created_at', '-pk')
+        return self.for_display().order_by('-created_at', '-pk')
 
     def hot(self) -> models.QuerySet['Question']:
-        return self.get_queryset().annotate(
-            rating=models.Sum('votes__value', default=0),
-        ).order_by('-rating', '-created_at', '-pk')
+        return self.new().order_by('-rating', '-created_at', '-pk')
 
     def by_tag(self, tag_name: str) -> models.QuerySet['Question']:
-        return self.new().annotate(
-            rating=models.Sum('votes__value', default=0),
-        ).filter(tags__name=tag_name)
+        return self.new().filter(tags__name=tag_name)
 
 
 class Question(models.Model):
@@ -90,7 +97,7 @@ class Question(models.Model):
 
 class AnswerManager(models.Manager['Answer']):
     def get_by_question(self, question: Question) -> models.QuerySet['Answer']:
-        return self.get_queryset().annotate(
+        return self.get_queryset().select_related('author__profile').annotate(
             rating=models.Sum('votes__value', default=0),
         ).filter(question=question).order_by('-is_accepted', '-rating', '-created_at', '-pk')
 
