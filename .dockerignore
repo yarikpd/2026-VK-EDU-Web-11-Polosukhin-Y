@@ -109,4 +109,4 @@ dmypy.json
 .pytype/
 cython_debug/
 static_temp/
-.env.docker
+media/

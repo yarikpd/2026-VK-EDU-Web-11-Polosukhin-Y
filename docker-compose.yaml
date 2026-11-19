@@ -23,6 +23,7 @@ services:
       - django_logs:/logs
       - ./:/app
       - static_data:/app/static_temp
+      - ./media:/app/media
     build:
       context: .
     expose:
@@ -59,6 +60,7 @@ services:
     build: ./nginx
     volumes:
       - static_data:/static:ro
+      - ./media:/media:ro
       - nginx_logs:/var/log/nginx
     ports:
       - "80:80"
