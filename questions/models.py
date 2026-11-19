@@ -1,5 +1,14 @@
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
+
+
+class TagManager(models.Manager['Tag']):
+    def popular(self) -> models.QuerySet['Tag']:
+        return self.get_queryset().annotate(
+            question_count=models.Count('questions'),
+        ).filter(question_count__gt=0).order_by('-question_count', 'name')
+
 
 class Tag(models.Model):
     name = models.CharField(
@@ -13,12 +22,32 @@ class Tag(models.Model):
         auto_now_add=True
     )
 
+    objects = TagManager()
+
     class Meta:
         verbose_name = 'тег'
         verbose_name_plural = 'теги'
 
     def __str__(self) -> str:
         return self.name
+
+
+class QuestionManager(models.Manager['Question']):
+    def new(self) -> models.QuerySet['Question']:
+        return self.get_queryset().annotate(
+            rating=models.Sum('votes__value', default=0),
+        ).order_by('-created_at', '-pk')
+
+    def hot(self) -> models.QuerySet['Question']:
+        return self.get_queryset().annotate(
+            rating=models.Sum('votes__value', default=0),
+        ).order_by('-rating', '-created_at', '-pk')
+
+    def by_tag(self, tag_name: str) -> models.QuerySet['Question']:
+        return self.new().annotate(
+            rating=models.Sum('votes__value', default=0),
+        ).filter(tags__name=tag_name)
+
 
 class Question(models.Model):
     author = models.ForeignKey(
@@ -47,12 +76,23 @@ class Question(models.Model):
         auto_now_add=True
     )
 
+    objects = QuestionManager()
+
     class Meta:
         verbose_name = 'вопрос'
         verbose_name_plural = 'вопросы'
 
     def __str__(self) -> str:
         return self.title
+
+    def get_absolute_url(self) -> str:
+        return reverse('question', kwargs={'id': self.pk})
+
+class AnswerManager(models.Manager['Answer']):
+    def get_by_question(self, question: Question) -> models.QuerySet['Answer']:
+        return self.get_queryset().annotate(
+            rating=models.Sum('votes__value', default=0),
+        ).filter(question=question).order_by('-is_accepted', '-rating', '-created_at', '-pk')
 
 class Answer(models.Model):
     question = models.ForeignKey(
@@ -72,14 +112,27 @@ class Answer(models.Model):
         max_length=10000,
         help_text='Введите текст ответа.',
     )
+    is_accepted = models.BooleanField(
+        'Принял ли ответ автор',
+        default=False
+    )
     created_at = models.DateTimeField(
         'дата создания',
         auto_now_add=True
     )
 
+    objects = AnswerManager()
+
     class Meta:
         verbose_name = 'ответ'
         verbose_name_plural = 'ответы'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('question',),
+                condition=models.Q(is_accepted=True),
+                name='question_only_one_correct',
+            ),
+        ]
 
     def __str__(self) -> str:
         return f'Ответ на вопрос "{self.question.title}" от {self.author.get_username()}'

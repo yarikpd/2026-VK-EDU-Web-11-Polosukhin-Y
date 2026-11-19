@@ -38,9 +38,9 @@ class QuestionAdmin(admin.ModelAdmin):
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
-    list_display = ('question', 'author', 'text', 'created_at')
+    list_display = ('question', 'author', 'text', 'is_accepted', 'created_at')
     search_fields = ('text', 'author__username', 'author__email', 'question__title')
-    list_filter = ('created_at', 'question', 'author', )
+    list_filter = ('created_at', 'question', 'author', 'is_accepted')
     list_select_related = ('author', 'question')
 
 @admin.register(QuestionVote)

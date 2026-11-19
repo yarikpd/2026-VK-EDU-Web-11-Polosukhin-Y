@@ -75,7 +75,7 @@
               <h2 class="h5">Популярные теги</h2>
               <div class="d-flex flex-wrap gap-2 mt-3">
 	              {% for tag in popular_tags %}
-								<a class="badge text-bg-secondary border text-decoration-none" href="{% url 'tag' tag.id %}">{{ tag.name }}</a>
+								<a class="badge text-bg-secondary border text-decoration-none" href="{% url 'tag' tag.name %}">{{ tag.name }}</a>
                 {% endfor %}
               </div>
             </div>
@@ -88,7 +88,7 @@
 	              {% for user in best_members %}
 								<li class="d-flex gap-2 mb-2">
 									<span class="member-number flex-shrink-0" aria-hidden="true">{{ forloop.counter }}.</span>
-									<span>{{ user.firstname }} {{ user.lastname }} <span class="text-body-secondary small">· {{ user.questions }}</span>
+									<span>{{ user.first_name }} {{ user.last_name }} <span class="text-body-secondary small">· {{ user.question_count }}</span>
 									</span>
 								</li>
 								{% endfor %}

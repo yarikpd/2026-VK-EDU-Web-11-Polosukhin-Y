@@ -16,6 +16,7 @@ from questions.models import Answer, AnswerVote, Question, QuestionVote, Tag
 
 
 BATCH_SIZE = 5000
+ANSWERS_PER_QUESTION = 10
 
 
 def create_in_batches(model, rows, *, collect_ids=False):
@@ -92,6 +93,25 @@ def choose_tags(tag_ids):
     return [tag_ids[0], *(tag_ids[position] for position in other_positions)]
 
 
+def generate_answers(question_ids, discussions, user_ids):
+    questions_with_accepted_answer = set(sample(question_ids, len(question_ids) // 3))
+    for question_id, discussion in zip(question_ids, discussions, strict=True):
+        accepted_position = None
+        if question_id in questions_with_accepted_answer:
+            accepted_position = randint(0, ANSWERS_PER_QUESTION - 1)
+        replies = islice(
+            ((reply, note) for note in REPLY_NOTES for reply in discussion.replies),
+            ANSWERS_PER_QUESTION,
+        )
+        for position, (reply, note) in enumerate(replies):
+            yield Answer(
+                question_id=question_id,
+                author_id=choice(user_ids),
+                text=f'{reply} {note}'.strip(),
+                is_accepted=position == accepted_position,
+            )
+
+
 class Command(BaseCommand):
     help = 'Добавляет тестовые данные. Коэффициент заполнения по умолчанию — 100.'
     requires_migrations_checks = True
@@ -166,18 +186,7 @@ class Command(BaseCommand):
         )
         answer_ids = create_in_batches(
             Answer,
-            (
-                Answer(
-                    question_id=question_id,
-                    author_id=choice(user_ids),
-                    text=f'{reply} {note}'.strip(),
-                )
-                for question_id, discussion in zip(question_ids, discussions, strict=True)
-                for reply, note in islice(
-                    ((reply, note) for note in REPLY_NOTES for reply in discussion.replies),
-                    10,
-                )
-            ),
+            generate_answers(question_ids, discussions, user_ids),
             collect_ids=True,
         )
 

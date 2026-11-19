@@ -8,7 +8,7 @@
     <div class="d-flex align-items-center gap-3 mb-3">
       {% include "includes/avatar.html" with author=question.author only %}
       <div>
-        <span class="fw-medium">{{ question.author.firstname }} {{ question.author.lastname }}</span>
+        <span class="fw-medium">{{ question.author.first_name }} {{ question.author.last_name }}</span>
         <div class="small text-body-secondary">
           <time datetime="{{ question.created_at|date:'c' }}">{{ question.created_at|timezone:'Europe/Moscow'|date:"d E Y, H:i" }}</time>
         </div>
@@ -21,8 +21,8 @@
       {% include "includes/vote.html" with post=question kind="question" only %}
       <a href="#answers">Ответов: {{ question.answers_count }}</a>
       <div class="d-flex flex-wrap gap-1">
-        {% for tag in question.tags %}
-          <a class="badge text-bg-secondary border text-decoration-none" href="{% url 'tag' tag=tag.id %}">{{ tag.name }}</a>
+        {% for tag in question.tags.all %}
+          <a class="badge text-bg-secondary border text-decoration-none" href="{% url 'tag' tag=tag.name %}">{{ tag.name }}</a>
         {% endfor %}
       </div>
     </div>
@@ -35,7 +35,7 @@
       <div class="d-flex align-items-center gap-3 mb-3">
         {% include "includes/avatar.html" with author=answer.author only %}
         <div>
-          <h3 class="h6 mb-1">{{ answer.author.firstname }} {{ answer.author.lastname }}</h3>
+          <h3 class="h6 mb-1">{{ answer.author.first_name }} {{ answer.author.last_name }}</h3>
           <time class="small text-body-secondary" datetime="{{ answer.created_at|date:'c' }}">{{ answer.created_at|timezone:'Europe/Moscow'|date:"d E Y, H:i" }}</time>
         </div>
       </div>
