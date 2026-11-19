@@ -1,11 +1,12 @@
 from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import Paginator, Page
-from django.http import Http404, HttpResponseRedirect, HttpRequest
+from django.http import HttpResponseRedirect, HttpRequest
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import FormView, TemplateView
 
 from questions.forms import AnswerForm, QuestionForm
-from questions.services import get_answers, get_questions, get_popular_tags, Question
+from questions.models import Tag, Question, Answer
 
 
 def paginate(objects_list: list, request: HttpRequest, per_page: int = 10) -> Page:
@@ -20,7 +21,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        questions_list = get_questions()
+        questions_list = Question.objects.new()
 
         context['page_obj'] = paginate(questions_list, self.request, self.questions_per_page)
 
@@ -44,16 +45,12 @@ class QuestionView(FormView):
     answers_per_page = 5
 
     def get_question(self) -> Question:
-        for question in get_questions():
-            if question['id'] == self.kwargs['id']:
-                return question
-        raise Http404('Вопрос не найден')
+        return get_object_or_404(Question.objects.for_display(), pk=self.kwargs['id'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         question = self.get_question()
-        answers = get_answers(question['id'])
-        question['answers_count'] = len(answers)
+        answers = Answer.objects.get_by_question(question)
 
         context.update({
             'question': question,
@@ -81,7 +78,7 @@ class HotView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        questions_list = get_questions()
+        questions_list = Question.objects.hot()
 
         context['page_obj'] = paginate(questions_list, self.request, self.questions_per_page)
 
@@ -93,16 +90,10 @@ class TagView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tag_name = self.kwargs['tag']
+        tag = get_object_or_404(Tag, name=self.kwargs['tag'])
+        context['tag'] = tag
 
-        # TODO: Implement DB
-        tags = get_popular_tags()
-        for tag in tags:
-            if tag['id'] == tag_name:
-                context['tag'] = tag
-                break
-
-        questions_list = get_questions()
+        questions_list = Question.objects.by_tag(tag.name)
 
         context['page_obj'] = paginate(questions_list, self.request, self.questions_per_page)
 

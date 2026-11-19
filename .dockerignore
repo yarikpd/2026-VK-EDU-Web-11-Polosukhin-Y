@@ -87,6 +87,8 @@ celerybeat-schedule
 celerybeat.pid
 *.sage.py
 .env
+.env.local
+.env.docker
 .venv
 .env.example
 .git/
@@ -107,4 +109,4 @@ dmypy.json
 .pytype/
 cython_debug/
 static_temp/
-.env.docker
+media/

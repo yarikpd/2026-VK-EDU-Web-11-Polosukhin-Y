@@ -9,27 +9,29 @@
     <div class="d-flex align-items-center gap-3 mb-3">
       {% include "includes/avatar.html" with author=question.author only %}
       <div>
-        <span class="fw-medium">{{ question.author.firstname }} {{ question.author.lastname }}</span>
+        <span class="fw-medium">{{ question.author.first_name }} {{ question.author.last_name }}</span>
         <div class="small text-body-secondary">
           <time datetime="2026-10-22T10:30:00+03:00">{{ question.created_at|date:"d E Y, H:i" }}</time>
         </div>
       </div>
     </div>
     <h2 class="h5">
-      <a href="{% url 'question' id=question.id %}" class="text-decoration-none">{{ question.title }}</a>
+      <a href="{{ question.get_absolute_url }}" class="text-decoration-none">{{ question.title }}</a>
     </h2>
     <p>{{ question.text }}</p>
     <div class="d-flex flex-wrap align-items-center gap-3">
       {% include "includes/vote.html" with post=question kind="question" only %}
-      <a href="{% url 'question' id=question.id %}#answers">{{ question.answers_count }} ответа</a>
+      <a href="{{ question.get_absolute_url }}#answers">{{ question.answers_count }} ответа</a>
       <div class="d-flex flex-wrap gap-1">
-        {% for tag in question.tags %}
-        <a class="badge text-bg-secondary border text-decoration-none" href="{% url 'tag' tag=tag.id %}">{{ tag.name }}</a>
+        {% for tag in question.tags.all %}
+        <a class="badge text-bg-secondary border text-decoration-none" href="{% url 'tag' tag=tag.name %}">{{ tag.name }}</a>
         {% endfor %}
       </div>
     </div>
   </div>
 </article>
+{% empty %}
+  <p class="text-body-secondary">Пока нет ни одного вопроса.</p>
 {% endfor %}
 {% if page_obj.has_other_pages %}
 <nav aria-label="Страницы вопросов" class="mt-4">
