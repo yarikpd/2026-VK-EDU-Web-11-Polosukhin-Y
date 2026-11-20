@@ -22,18 +22,16 @@
           <button class="btn btn-outline-secondary" type="submit">Найти</button>
         </form>
         <div class="d-none d-lg-flex align-items-center gap-3 flex-shrink-0">
-          <a href="{% url 'ask' %}" class="btn btn-primary">Задать вопрос</a>
+          {% include "includes/ask_button.html" with classes="btn btn-primary" %}
           <div class="d-flex gap-3 align-items-center">
-            {% if profile %}
+            {% if user.is_authenticated %}
               <span class="d-flex align-items-center gap-2">
-                {% include "includes/avatar.html" with author=profile size=32 only %}
-	              <span class="fw-medium"><a href="{% url 'profile' %}" class="link-body-emphasis">{{ profile.nickname }}</a></span>
+                {% include "includes/avatar.html" with author=user size=32 only %}
+                <span class="fw-medium"><a href="{% url 'profile' %}" class="link-body-emphasis">{{ user.username }}</a></span>
               </span>
-              <a href="{% url 'logout' %}" class="btn btn-sm btn-primary d-inline-flex align-items-center p-2" aria-label="Выйти" title="Выйти">
-                <img src="{% static 'img/logout.svg' %}" width="20" height="20" alt="">
-              </a>
+              {% include "logout_form.html" %}
             {% else %}
-              <a href="{% url 'login' %}" class="link-body-emphasis">Войти</a>
+              <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode:'' }}" class="link-body-emphasis">Войти</a>
               <a href="{% url 'signup' %}" class="btn btn-sm btn-outline-primary">Регистрация</a>
             {% endif %}
           </div>
@@ -45,19 +43,19 @@
             </svg>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-menu">
-            {% if profile %}
+            {% if user.is_authenticated %}
             <li class="dropdown-header d-flex align-items-center gap-2">
-              {% include "includes/avatar.html" with author=profile size=32 only %}
-              <span class="fw-medium text-body"><a href="{% url 'profile' %}" class="link-body-emphasis">{{ profile.nickname }}</a></span>
+              {% include "includes/avatar.html" with author=user size=32 only %}
+              <span class="fw-medium text-body"><a href="{% url 'profile' %}" class="link-body-emphasis">{{ user.username }}</a></span>
             </li>
             {% endif %}
             <li>
-              <a class="dropdown-item" href="{% url 'ask' %}">Задать вопрос</a>
+              {% include "includes/ask_button.html" with classes="dropdown-item" %}
             </li>
-            {% if profile %}
-              <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+            {% if user.is_authenticated %}
+              <li>{% include "logout_form.html" with mobile=True %}</li>
             {% else %}
-              <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
+              <li><a class="dropdown-item" href="{% url 'login' %}?next={{ request.get_full_path|urlencode:'' }}">Войти</a></li>
               <li><a class="dropdown-item" href="{% url 'signup' %}">Регистрация</a></li>
             {% endif %}
           </ul>
@@ -85,10 +83,10 @@
               <h2 class="h5">Лучшие пользователи</h2>
               <p class="small text-body-secondary">За эту неделю</p>
               <ol class="list-unstyled mb-0" role="list">
-	              {% for user in best_members %}
+              {% for member in best_members %}
 								<li class="d-flex gap-2 mb-2">
 									<span class="member-number flex-shrink-0" aria-hidden="true">{{ forloop.counter }}.</span>
-									<span>{{ user.first_name }} {{ user.last_name }} <span class="text-body-secondary small">· {{ user.question_count }}</span>
+								<span>{{ member.get_full_name|default:member.username }} <span class="text-body-secondary small">· {{ member.question_count }}</span>
 									</span>
 								</li>
 								{% endfor %}
@@ -105,5 +103,6 @@
       </div>
     </footer>
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/app.js' %}" defer></script>
   </body>
 </html>

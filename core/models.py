@@ -1,4 +1,6 @@
+from pathlib import Path
 from random import choice
+from uuid import uuid4
 
 from django.conf import settings
 from django.core.validators import RegexValidator
@@ -12,6 +14,10 @@ def random_avatar_color() -> str:
     return choice(AVATAR_COLORS)
 
 
+def avatar_upload_path(instance, filename: str) -> str:
+    return f'avatars/{uuid4().hex}{Path(filename).suffix.lower()}'
+
+
 class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -21,7 +27,7 @@ class Profile(models.Model):
     )
     avatar = models.ImageField(
         'аватар',
-        upload_to='avatars/',
+        upload_to=avatar_upload_path,
         blank=True,
     )
     avatar_color = models.CharField(
