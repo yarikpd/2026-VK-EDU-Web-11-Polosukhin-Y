@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from . import views
 
@@ -8,5 +8,5 @@ urlpatterns = [
     path('question/<int:id>/', views.QuestionView.as_view(), name='question'),
     path('hot/', views.HotView.as_view(), name='hot'),
     path('tag/<path:tag>/', views.TagView.as_view(), name='tag'),
-    path('logout/', views.LogoutView.as_view(), name='logout')
+    path('actions/', include('questions.action_urls')),
 ]

@@ -1,4 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="{{ size|default:48 }}" height="{{ size|default:48 }}" viewBox="0 0 64 64" class="rounded flex-shrink-0" role="img" aria-label="Аватар: {{ author.firstname }} {{ author.lastname }}">
-  <rect width="64" height="64" rx="10" fill="{{ author.profile.avatar_color }}"></rect>
-  <text x="32" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="white">{{ author.first_name|first|upper }}{{ author.last_name|first|upper }}</text>
-</svg>
+{% with name=author.get_full_name|default:author.username avatar_size=size|default:48 profile=author.profile %}
+  {% if profile.avatar %}
+    <img src="{{ profile.avatar.url }}" width="{{ avatar_size }}" height="{{ avatar_size }}" class="rounded flex-shrink-0 object-fit-cover" alt="Аватар: {{ name }}">
+  {% else %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="{{ avatar_size }}" height="{{ avatar_size }}" viewBox="0 0 64 64" class="rounded flex-shrink-0" role="img" aria-label="Аватар: {{ name }}">
+      <rect width="64" height="64" rx="10" fill="{{ profile.avatar_color|default:'#70545e' }}"></rect>
+      <text x="32" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="white">{{ author.first_name|default:author.username|first|upper }}{{ author.last_name|first|upper }}</text>
+    </svg>
+  {% endif %}
+{% endwith %}

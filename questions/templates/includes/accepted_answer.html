@@ -1,0 +1,13 @@
+{% if can_mark_answer %}
+  <form method="post" action="{% url 'question_actions:accept_answer' question.pk %}" data-accepted-form>
+    {% csrf_token %}
+    <input type="hidden" name="answer_id" value="{{ answer.pk }}">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="accepted-{{ answer.pk }}" name="accepted" value="1"{% if answer.is_accepted %} checked{% endif %}>
+      <label class="form-check-label" for="accepted-{{ answer.pk }}">Правильный ответ</label>
+    </div>
+    <div class="text-danger small" data-action-error role="alert" hidden></div>
+  </form>
+{% elif answer.is_accepted %}
+  <span class="badge text-bg-success">Правильный ответ</span>
+{% endif %}

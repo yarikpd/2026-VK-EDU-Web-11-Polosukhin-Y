@@ -1,0 +1,12 @@
+{% load static %}
+<form method="post" action="{% url 'logout' %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  {% if mobile %}
+    <button type="submit" class="dropdown-item">Выйти</button>
+  {% else %}
+    <button type="submit" class="btn btn-sm btn-primary d-inline-flex align-items-center p-2" aria-label="Выйти" title="Выйти">
+      <img src="{% static 'img/logout.svg' %}" width="20" height="20" alt="">
+    </button>
+  {% endif %}
+</form>
