@@ -4,6 +4,13 @@ from django.db.models.functions import Coalesce
 from django.urls import reverse
 
 
+def with_user_vote(queryset, votes, user):
+    if user is None or not user.is_authenticated:
+        return queryset
+    value = votes.filter(user=user).values('value')
+    return queryset.annotate(user_vote=Coalesce(models.Subquery(value), 0))
+
+
 class TagManager(models.Manager['Tag']):
     def popular(self) -> models.QuerySet['Tag']:
         return self.get_queryset().annotate(
@@ -34,26 +41,27 @@ class Tag(models.Model):
 
 
 class QuestionManager(models.Manager['Question']):
-    def for_display(self) -> models.QuerySet['Question']:
+    def for_display(self, user=None) -> models.QuerySet['Question']:
+        votes = QuestionVote.objects.filter(question_id=models.OuterRef('pk'))
         vote_totals = (
-            QuestionVote.objects.filter(question_id=models.OuterRef('pk'))
-            .values('question_id')
+            votes.values('question_id')
             .annotate(total=models.Sum('value', output_field=models.IntegerField()))
             .values('total')
         )
-        return self.get_queryset().select_related('author__profile').prefetch_related('tags').annotate(
+        queryset = self.get_queryset().select_related('author__profile').prefetch_related('tags').annotate(
             answers_count=models.Count('answers'),
             rating=Coalesce(models.Subquery(vote_totals), 0),
         )
+        return with_user_vote(queryset, votes, user)
 
-    def new(self) -> models.QuerySet['Question']:
-        return self.for_display().order_by('-created_at', '-pk')
+    def new(self, user=None) -> models.QuerySet['Question']:
+        return self.for_display(user).order_by('-created_at', '-pk')
 
-    def hot(self) -> models.QuerySet['Question']:
-        return self.new().order_by('-rating', '-created_at', '-pk')
+    def hot(self, user=None) -> models.QuerySet['Question']:
+        return self.for_display(user).order_by('-rating', '-created_at', '-pk')
 
-    def by_tag(self, tag_name: str) -> models.QuerySet['Question']:
-        return self.new().filter(tags__name=tag_name)
+    def by_tag(self, tag_name: str, user=None) -> models.QuerySet['Question']:
+        return self.new(user).filter(tags__name=tag_name)
 
 
 class Question(models.Model):
@@ -96,10 +104,19 @@ class Question(models.Model):
         return reverse('question', kwargs={'id': self.pk})
 
 class AnswerManager(models.Manager['Answer']):
-    def get_by_question(self, question: Question) -> models.QuerySet['Answer']:
-        return self.get_queryset().select_related('author__profile').annotate(
+    def get_by_question(self, question: Question, user=None) -> models.QuerySet['Answer']:
+        queryset = self.get_queryset().select_related('author__profile').annotate(
             rating=models.Sum('votes__value', default=0),
         ).filter(question=question).order_by('-is_accepted', '-rating', '-created_at', '-pk')
+        votes = AnswerVote.objects.filter(answer_id=models.OuterRef('pk'))
+        return with_user_vote(queryset, votes, user)
+
+    def page_for(self, answer: 'Answer', per_page: int) -> int:
+        answer_ids = self.get_by_question(answer.question).values_list('pk', flat=True)
+        for position, answer_id in enumerate(answer_ids.iterator()):
+            if answer_id == answer.pk:
+                return position // per_page + 1
+        raise self.model.DoesNotExist(f'Ответ с ID {answer.pk} не найден.')
 
 class Answer(models.Model):
     question = models.ForeignKey(
