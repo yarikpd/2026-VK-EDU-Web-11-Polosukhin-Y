@@ -1,113 +1,119 @@
-from typing import Any
+from pathlib import Path
 
 from django import forms
-from django.core.files.uploadedfile import UploadedFile
-from django.core.validators import FileExtensionValidator
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UsernameField
+from django.db import transaction
+
+from .models import Profile
+
+User = get_user_model()
 
 
-class AccountForm(forms.Form):
+class BootstrapFormMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for name, field in self.fields.items():
+        for field in self.fields.values():
             field.widget.attrs.setdefault('class', 'form-control')
 
-            auto_id = field.get_bound_field(self, name).auto_id
-            if field.help_text and auto_id:
-                field.widget.attrs.setdefault('aria-describedby', f'{auto_id}_helptext')
 
+class AvatarField(forms.ImageField):
+    formats = {'.png': 'PNG', '.jpg': 'JPEG', '.jpeg': 'JPEG'}
 
-class LoginForm(AccountForm):
-    email = forms.EmailField(
-        label='Электронная почта', max_length=254,
-        help_text='Адрес, указанный при регистрации.',
-        widget=forms.EmailInput(attrs={'autocomplete': 'username'}),
-        error_messages={'required': 'Введите email.', 'invalid': 'Введите корректный email.'},
-    )
-    password = forms.CharField(
-        label='Пароль', max_length=128, strip=False,
-        help_text='Введите пароль от своей учетной записи.',
-        widget=forms.PasswordInput(attrs={'autocomplete': 'current-password'}),
-        error_messages={'required': 'Введите пароль.'},
-    )
+    def __init__(self, label):
+        super().__init__(
+            label=label,
+            required=False,
+            help_text='PNG или JPEG, до 2 МБ.',
+            widget=forms.FileInput(attrs={'accept': 'image/png,image/jpeg'}),
+        )
 
-
-class ProfileForm(AccountForm):
-    email = forms.EmailField(
-        label='Электронная почта', max_length=254,
-        help_text='Используется для входа и уведомлений.',
-        widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
-        error_messages={'required': 'Введите email.', 'invalid': 'Введите корректный email.'},
-    )
-    nickname = forms.CharField(
-        label='Никнейм', min_length=3, max_length=30,
-        help_text='От 3 до 30 символов.',
-        widget=forms.TextInput(attrs={'autocomplete': 'username', 'minlength': 3}),
-        error_messages={'required': 'Введите никнейм.'},
-    )
-    avatar = forms.FileField(
-        label='Новый аватар', required=False,
-        help_text='PNG или JPEG, до 2 МБ.',
-        widget=forms.FileInput(attrs={'accept': 'image/png,image/jpeg'}),
-        validators=[FileExtensionValidator(
-            allowed_extensions=['png', 'jpg', 'jpeg'],
-            message='Выберите файл PNG или JPEG.',
-        )],
-    )
-
-    def clean_avatar(self) -> UploadedFile | None:
-        avatar: UploadedFile | None = self.cleaned_data.get('avatar')
-        if avatar and avatar.size > 2 * 1024 * 1024:
+    def to_python(self, data):
+        if not data:
+            return super().to_python(data)
+        if data.size > 2 * 1024 * 1024:
             raise forms.ValidationError('Размер аватара не должен превышать 2 МБ.')
-        return avatar
+        expected_format = self.formats.get(Path(data.name).suffix.lower())
+        if not expected_format:
+            raise forms.ValidationError('Выберите файл PNG или JPEG.')
+        image = super().to_python(data)
+        if image.image.format != expected_format:
+            raise forms.ValidationError('Содержимое файла должно соответствовать формату PNG или JPEG.')
+        return image
 
 
-class SignupForm(AccountForm):
-    email = forms.EmailField(
-        label='Электронная почта', max_length=254,
-        help_text='Используется для входа и уведомлений',
-        widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
-        error_messages={'required': 'Введите email.', 'invalid': 'Введите корректный email.'},
+class LoginForm(BootstrapFormMixin, AuthenticationForm):
+    username = UsernameField(
+        label='Логин или электронная почта',
+        max_length=254,
+        widget=forms.TextInput(attrs={'autocomplete': 'username', 'autofocus': True}),
     )
-    nickname = forms.CharField(
-        label='Никнейм', min_length=3, max_length=30,
-        help_text='От 3 до 30 символов.',
-        widget=forms.TextInput(attrs={'autocomplete': 'username', 'minlength': 3}),
-        error_messages={'required': 'Введите никнейм.'},
-    )
-    avatar = forms.FileField(
-        label='Аватар', required=False,
-        help_text='PNG или JPEG, до 2 МБ.',
-        widget=forms.FileInput(attrs={'accept': 'image/png,image/jpeg'}),
-        validators=[FileExtensionValidator(
-            allowed_extensions=['png', 'jpg', 'jpeg'],
-            message='Выберите файл PNG или JPEG.',
-        )],
-    )
-    password = forms.CharField(
-        label='Пароль', min_length=8, max_length=128, strip=False,
-        help_text='От 8 до 128 символов.',
-        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'minlength': 8}),
-        error_messages={'required': 'Введите пароль.'},
-    )
-    password_repeat = forms.CharField(
-        label='Повторите пароль', min_length=8, max_length=128, strip=False,
-        help_text='Пароли должны совпадать.',
-        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'minlength': 8}),
-        error_messages={'required': 'Повторите пароль.'},
-    )
-    field_order = ['email', 'nickname', 'password', 'password_repeat', 'avatar']
+    error_messages = {
+        **AuthenticationForm.error_messages,
+        'invalid_login': 'Неверный логин, электронная почта или пароль.',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].max_length = 254
+        self.fields['username'].widget.attrs['maxlength'] = 254
 
     def clean(self):
-        cleaned_data: dict[str, Any] = self.cleaned_data
+        identifier = self.cleaned_data.get('username')
+        if identifier and '@' in identifier and not User.objects.filter(username=identifier).exists():
+            matches = list(User.objects.filter(email__iexact=identifier).values_list('username', flat=True)[:2])
+            if len(matches) == 1:
+                self.cleaned_data['username'] = matches[0]
+        return super().clean()
 
-        password = cleaned_data.get('password')
-        repeated = cleaned_data.get('password_repeat')
-        if password and repeated and password != repeated:
-            self.add_error('password_repeat', 'Пароли не совпадают.')
-        return cleaned_data
 
-    def clean_avatar(self) -> UploadedFile | None:
-        avatar: UploadedFile | None = self.cleaned_data.get('avatar')
-        if avatar and avatar.size > 2 * 1024 * 1024:
-            raise forms.ValidationError('Размер аватара не должен превышать 2 МБ.')
-        return avatar
+class UserDetailsMixin(BootstrapFormMixin):
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError('Этот адрес уже используется.', code='duplicate')
+        return email
+
+
+class SignupForm(UserDetailsMixin, UserCreationForm):
+    email = forms.EmailField(label='Электронная почта', max_length=254)
+    first_name = forms.CharField(label='Имя', max_length=150)
+    avatar = AvatarField(label='Аватар')
+
+    class Meta(UserCreationForm.Meta):
+        fields = ('username', 'email', 'first_name')
+        labels = {'username': 'Логин (никнейм)'}
+
+    @transaction.atomic
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        if commit:
+            Profile.objects.create(user=user, avatar=self.cleaned_data['avatar'] or '')
+        return user
+
+
+class ProfileForm(UserDetailsMixin, forms.ModelForm):
+    email = forms.EmailField(label='Электронная почта', max_length=254)
+    avatar = AvatarField(label='Новый аватар')
+
+    class Meta:
+        model = User
+        fields = ('email', 'username')
+        field_classes = {'username': UsernameField}
+        labels = {'username': 'Никнейм'}
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError('Этот никнейм уже занят.', code='duplicate')
+        return username
+
+    @transaction.atomic
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        if commit:
+            profile, _ = Profile.objects.get_or_create(user=user)
+            if avatar := self.cleaned_data['avatar']:
+                profile.avatar = avatar
+                profile.save(update_fields=['avatar'])
+        return user

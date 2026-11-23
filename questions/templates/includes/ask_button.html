@@ -1,0 +1,7 @@
+{% if user.is_authenticated %}
+  <a href="{% url 'ask' %}" class="{{ classes }}">Задать вопрос</a>
+{% else %}
+  <span title="Войдите, чтобы задать вопрос">
+    <button class="{{ classes }}" type="button" disabled>Задать вопрос</button>
+  </span>
+{% endif %}

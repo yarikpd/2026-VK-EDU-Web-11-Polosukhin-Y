@@ -1,11 +1,18 @@
-<fieldset class="m-0">
-  <legend class="visually-hidden">Оценка публикации</legend>
-  <div class="btn-group btn-group-sm" role="group" aria-label="Голосование">
-    <input class="btn-check" type="radio" name="vote-{{ kind }}-{{ post.id }}" id="up-{{ kind }}-{{ post.id }}"{% if post.vote == 'up' %} checked{% endif %}>
-    <label class="btn btn-outline-primary" for="up-{{ kind }}-{{ post.id }}"><span aria-hidden="true">+</span><span class="visually-hidden">Нравится</span></label>
-    <input class="btn-check" type="radio" name="vote-{{ kind }}-{{ post.id }}" id="none-{{ kind }}-{{ post.id }}"{% if post.vote == 'none' %} checked{% endif %}>
-    <label class="btn btn-outline-secondary" for="none-{{ kind }}-{{ post.id }}">{{ post.rating }}<span class="visually-hidden"> — рейтинг, сбросить голос</span></label>
-    <input class="btn-check" type="radio" name="vote-{{ kind }}-{{ post.id }}" id="down-{{ kind }}-{{ post.id }}"{% if post.vote == 'down' %} checked{% endif %}>
-    <label class="btn btn-outline-primary" for="down-{{ kind }}-{{ post.id }}"><span aria-hidden="true">−</span><span class="visually-hidden">Не нравится</span></label>
-  </div>
-</fieldset>
+<form action="{% url action post.pk %}" method="post" data-vote-form>
+  {% if user.is_authenticated %}{% csrf_token %}{% endif %}
+  <fieldset class="m-0"{% if not user.is_authenticated %} disabled title="Войдите, чтобы голосовать"{% endif %}>
+    <legend class="visually-hidden">Оценка публикации</legend>
+    <div class="btn-group btn-group-sm">
+      <button class="btn btn-outline-primary{% if post.user_vote == 1 %} active{% endif %}" type="submit" name="value" value="1" aria-pressed="{% if post.user_vote == 1 %}true{% else %}false{% endif %}">
+        <span aria-hidden="true">+</span><span class="visually-hidden">Нравится</span>
+      </button>
+      <button class="btn btn-outline-secondary" type="submit" name="value" value="0" title="Сбросить голос">
+        <span data-rating aria-live="polite">{{ post.rating }}</span><span class="visually-hidden"> — рейтинг, сбросить голос</span>
+      </button>
+      <button class="btn btn-outline-primary{% if post.user_vote == -1 %} active{% endif %}" type="submit" name="value" value="-1" aria-pressed="{% if post.user_vote == -1 %}true{% else %}false{% endif %}">
+        <span aria-hidden="true">−</span><span class="visually-hidden">Не нравится</span>
+      </button>
+    </div>
+  </fieldset>
+  <div class="text-danger small mt-1" data-action-error role="alert" hidden></div>
+</form>

@@ -1,14 +1,19 @@
 # 2026-VK-EDU-Web-11-Polosukhin-Y
 
-**AskVK** — учебный сайт вопросов и ответов. В этой ветке выполняется ДЗ2: обработка HTTP-запросов, маршрутизация, Django-шаблоны и пагинация на основе верстки из ДЗ1.
+**AskVK** — учебный сайт вопросов и ответов на Django и PostgreSQL.
+
+В ДЗ4 добавлены регистрация, вход и выход, редактирование профиля с загрузкой аватара, публикация вопросов с тегами и ответов. Голоса за вопросы и ответы учитываются без перезагрузки страницы. Автор вопроса может отметить правильный ответ.
 
 ## Подготовка переменных окружения
 
-Если `.env` ещё нет, создайте его из примера:
+Если `.env.local` или `.env.docker` ещё нет, создайте их из примера:
 
 ```sh
-cp .env.example .env
+cp .env.example .env.local
+cp .env.example .env.docker
 ```
+
+`.env.local` используется при локальном запуске через Django, `.env.docker` — при запуске через Docker Compose. Замените заглушки `DJANGO_SECRET`, `POSTGRES_DB`, `POSTGRES_USER` и `POSTGRES_PASSWORD` в обоих файлах.
 
 Новый секретный ключ можно получить командой:
 
@@ -36,27 +41,31 @@ python -m pip install -r requirements.txt
 docker compose up -d --wait askvk-postgres
 ```
 
-PostgreSQL из Compose доступна на **порту 5430 хоста**.
+Если используете PostgreSQL из Compose, укажите в `.env.local` `POSTGRES_HOST=127.0.0.1` и `POSTGRES_PORT=5430`. Имя базы, пользователь и пароль должны совпадать с настройками в `.env.docker`.
 
-Если используется собственная PostgreSQL, вставьте её реальные адрес и порт в `.env`.
+Если используется собственная PostgreSQL, вставьте её реальные адрес и порт в `.env.local`.
 
-### 3. Запустить сервер
+### 3. Загрузить настройки, применить миграции и запустить сервер
 
 ```sh
+set -a
+. ./.env.local
+set +a
+python manage.py migrate
 python manage.py runserver 127.0.0.1:8000
 ```
 
-Откройте [http://localhost:8000/](http://localhost:8000/).
+Откройте [сайт на порту 8000](http://127.0.0.1:8000/).
 
 ## Запуск через Docker Compose
 
-Нужен запущенный Docker Engine с Compose и подготовленный `.env`.
+Нужен запущенный Docker Engine с Compose. В `.env.docker` укажите `POSTGRES_HOST=askvk-postgres` и `POSTGRES_PORT=5432`.
 
 ```sh
 docker compose up --build
 ```
 
-После запуска откройте [http://localhost/](http://localhost/). Порт 80 должен быть свободен.
+После запуска откройте [сайт на порту 80](http://localhost/).
 
 В Compose три сервиса:
 
@@ -64,7 +73,7 @@ docker compose up --build
 | --- | --- |
 | `askvk-postgres` | PostgreSQL; подключение с хоста — `localhost:5430` |
 | `askvk_django` | Django через Gunicorn на внутреннем порту 8000 |
-| `nginx` | Принимает HTTP-запросы на порту 80, проксирует их в Django и отдаёт `/static/` |
+| `nginx` | Принимает HTTP-запросы на порту 80, проксирует их в Django и отдаёт `/static/` и `/media/` |
 
 ### Автоматический перезапуск при разработке
 
@@ -72,4 +81,20 @@ docker compose up --build
 
 ```sh
 docker compose up --build --watch
+```
+
+## Тестовые данные и админка
+
+Локально выполните команды в окружении с загруженным `.env.local` после применения миграций.
+
+```sh
+python manage.py fill_db 2
+python manage.py createsuperuser
+```
+
+Для запущенного проекта в Docker используйте те же команды внутри контейнера Django.
+
+```sh
+docker compose exec askvk_django python manage.py fill_db 2
+docker compose exec askvk_django python manage.py createsuperuser
 ```
