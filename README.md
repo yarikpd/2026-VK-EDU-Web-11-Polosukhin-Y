@@ -59,7 +59,7 @@ python manage.py runserver 127.0.0.1:8000
 
 ## Запуск через Docker Compose
 
-Нужен запущенный Docker Engine с Compose. В `.env.docker` укажите `POSTGRES_HOST=askvk-postgres` и `POSTGRES_PORT=5432`.
+Нужен запущенный Docker Engine с Docker Compose 2.32.0 или новее. Эта версия требуется для действия `restart` в секции `develop.watch`, в том числе при обычном `docker compose up`. В `.env.docker` укажите `POSTGRES_HOST=askvk-postgres` и `POSTGRES_PORT=5432`.
 
 ```sh
 docker compose up --build

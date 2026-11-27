@@ -22,6 +22,7 @@ class UserWithProfileAdmin(UserAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('user',)
     list_display = ('user', 'user_email', 'avatar', 'avatar_color', 'created_at', )
     list_filter = ('avatar_color', 'created_at', )
     search_fields = ('user__username', 'user__email')

@@ -4,13 +4,7 @@ set -e
 python manage.py migrate
 python manage.py collectstatic --no-input
 
-if [ ! -f /logs/access_file_g.log ]; then
-    touch /logs/access_file_g.log
-fi
-
-if [ ! -f /logs/error_file_g.log ]; then
-    touch /logs/error_file_g.log
-fi
+mkdir -p /logs
 
 exec gunicorn \
     --access-logfile /logs/access_file_g.log \

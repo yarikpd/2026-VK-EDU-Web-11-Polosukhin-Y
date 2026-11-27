@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Page, Paginator
+from django.core.paginator import InvalidPage, Page, Paginator
 from django.http import Http404, HttpRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -15,12 +15,17 @@ from .models import Answer, Question, Tag
 
 def paginate(objects_list: list, request: HttpRequest, per_page: int = 10) -> Page:
     paginator = Paginator(objects_list, per_page)
-    return paginator.get_page(request.GET.get('page', 1))
+    try:
+        page = paginator.page(request.GET.get('page', 1))
+    except InvalidPage:
+        page = paginator.page(1)
+    page.visible_numbers = paginator.get_elided_page_range(page.number)
+    return page
 
 
 class IndexView(TemplateView):
     template_name = 'index.html'
-    questions_per_page = 10
+    questions_per_page = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -46,7 +51,7 @@ class AskView(LoginRequiredMixin, FormView):
 class QuestionView(FormView):
     template_name = 'question.html'
     form_class = AnswerForm
-    answers_per_page = 5
+    answers_per_page = 30
 
     @cached_property
     def question(self) -> Question:
@@ -82,7 +87,7 @@ class QuestionView(FormView):
 
 class HotView(TemplateView):
     template_name = 'hot.html'
-    questions_per_page = 10
+    questions_per_page = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -96,7 +101,7 @@ class HotView(TemplateView):
 
 class TagView(TemplateView):
     template_name = 'tag.html'
-    questions_per_page = 10
+    questions_per_page = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

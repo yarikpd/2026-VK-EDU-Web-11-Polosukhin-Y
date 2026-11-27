@@ -3,12 +3,14 @@ from django.db import transaction
 from django.db.models import Sum
 
 from .models import Answer, Question, Tag
+from .validators import validate_tag_name
 
 
 class QuestionForm(forms.ModelForm):
     tags = forms.CharField(
         label='Теги',
         max_length=94,
+        strip=False,
         help_text='Не более 3 тегов через запятую. До 30 символов в каждом.',
         widget=forms.TextInput(attrs={'class': 'form-control'}),
     )
@@ -30,15 +32,16 @@ class QuestionForm(forms.ModelForm):
         self.instance.author_id = author.pk
 
     def clean_tags(self) -> list[str]:
-        tags = [tag.strip() for tag in self.cleaned_data['tags'].split(',')]
+        tags = [tag.strip(" ") for tag in self.cleaned_data['tags'].split(',')]
         if not all(tags):
             raise forms.ValidationError('Укажите непустые теги через запятую.')
         if len(tags) > 3:
             raise forms.ValidationError('Можно указать не более 3 тегов.')
         if any(len(tag) > 30 for tag in tags):
             raise forms.ValidationError('Каждый тег должен содержать не более 30 символов.')
-        if any(part in ('.', '..') for tag in tags for part in tag.split('/')):
-            raise forms.ValidationError('Теги не могут содержать отдельные части «.» или «..».')
+        for tag in tags:
+            validate_tag_name(tag)
+
         return list(dict.fromkeys(tags))
 
     @transaction.atomic

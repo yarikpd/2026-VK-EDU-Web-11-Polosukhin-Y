@@ -33,27 +33,5 @@
 {% empty %}
   <p class="text-body-secondary">Пока нет ни одного вопроса.</p>
 {% endfor %}
-{% if page_obj.has_other_pages %}
-<nav aria-label="Страницы вопросов" class="mt-4">
-  <ul class="pagination pagination-sm flex-wrap">
-    {% if page_obj.has_previous %}
-    <li class="page-item">
-      <a class="page-link" href="{% querystring page=page_obj.previous_page_number %}">Назад</a>
-    </li>
-    {% endif %}
-
-    {% for number in page_obj.paginator.page_range %}
-    <li class="page-item{% if number == page_obj.number %} active{% endif %}"{% if number == page_obj.number %} aria-current="page"{% endif %}>
-      <a class="page-link" href="{% querystring page=number %}">{{ number }}</a>
-    </li>
-    {% endfor %}
-
-    {% if page_obj.has_next %}
-    <li class="page-item">
-      <a class="page-link" href="{% querystring page=page_obj.next_page_number %}">Далее</a>
-    </li>
-    {% endif %}
-  </ul>
-</nav>
-{% endif %}
+{% include "includes/pagination.html" with label="Страницы вопросов" anchor="" %}
 {% endblock %}

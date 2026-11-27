@@ -3,6 +3,8 @@ from django.db import models
 from django.db.models.functions import Coalesce
 from django.urls import reverse
 
+from .validators import validate_tag_name
+
 
 def with_user_vote(queryset, votes, user):
     if user is None or not user.is_authenticated:
@@ -23,6 +25,7 @@ class Tag(models.Model):
         'название тега',
         max_length=30,
         unique=True,
+        validators=[validate_tag_name],
         help_text='Введите название тега.',
     )
     created_at = models.DateTimeField(
@@ -43,14 +46,11 @@ class Tag(models.Model):
 class QuestionManager(models.Manager['Question']):
     def for_display(self, user=None) -> models.QuerySet['Question']:
         votes = QuestionVote.objects.filter(question_id=models.OuterRef('pk'))
-        vote_totals = (
-            votes.values('question_id')
-            .annotate(total=models.Sum('value', output_field=models.IntegerField()))
-            .values('total')
-        )
+        answer_counts = Answer.objects.filter(question_id=models.OuterRef('pk')).values(
+            'question_id'
+        ).annotate(total=models.Count('*')).values('total')
         queryset = self.get_queryset().select_related('author__profile').prefetch_related('tags').annotate(
-            answers_count=models.Count('answers'),
-            rating=Coalesce(models.Subquery(vote_totals), 0),
+            answers_count=Coalesce(models.Subquery(answer_counts), 0),
         )
         return with_user_vote(queryset, votes, user)
 
@@ -61,10 +61,11 @@ class QuestionManager(models.Manager['Question']):
         return self.for_display(user).order_by('-rating', '-created_at', '-pk')
 
     def by_tag(self, tag_name: str, user=None) -> models.QuerySet['Question']:
-        return self.new(user).filter(tags__name=tag_name)
+        return self.hot(user).filter(tags__name=tag_name)
 
 
 class Question(models.Model):
+    rating = models.IntegerField(default=0, editable=False)
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -94,6 +95,10 @@ class Question(models.Model):
     objects = QuestionManager()
 
     class Meta:
+        indexes = [
+            models.Index(fields=['-created_at', '-id'], name='question_new_idx'),
+            models.Index(fields=['-rating', '-created_at', '-id'], name='question_hot_idx'),
+        ]
         verbose_name = 'вопрос'
         verbose_name_plural = 'вопросы'
 
