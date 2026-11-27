@@ -26,6 +26,7 @@ services:
       - ./media:/app/media
     build:
       context: .
+      target: development
     expose:
       - 8000
     env_file:
